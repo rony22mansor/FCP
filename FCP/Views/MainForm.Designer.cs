@@ -34,11 +34,14 @@ namespace FCP
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.btnAddFiles = new System.Windows.Forms.ToolStripButton();
             this.btnAddFolder = new System.Windows.Forms.ToolStripButton();
-            this.btnRemoveSelected = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnRemoveSelected = new System.Windows.Forms.ToolStripButton();
+            this.btnRemoveAll = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnCompress = new System.Windows.Forms.ToolStripButton();
             this.btnExtract = new System.Windows.Forms.ToolStripButton();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupProcessStatus = new System.Windows.Forms.GroupBox();
             this.lblOutputPathValue = new System.Windows.Forms.Label();
             this.lblCompressionRatioValue = new System.Windows.Forms.Label();
@@ -50,18 +53,26 @@ namespace FCP
             this.btnCancel = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.groupBoxOptions = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.chkPassword = new System.Windows.Forms.CheckBox();
-            this.radioHuffman = new System.Windows.Forms.RadioButton();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.radioShannonFano = new System.Windows.Forms.RadioButton();
+            this.radioHuffman = new System.Windows.Forms.RadioButton();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             this.fileListView = new System.Windows.Forms.ListView();
             this.colFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mainToolStrip.SuspendLayout();
             this.mainPanel.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.groupProcessStatus.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainToolStrip
@@ -70,8 +81,10 @@ namespace FCP
             this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAddFiles,
             this.btnAddFolder,
-            this.btnRemoveSelected,
             this.toolStripSeparator1,
+            this.btnRemoveSelected,
+            this.btnRemoveAll,
+            this.toolStripSeparator2,
             this.btnCompress,
             this.btnExtract});
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
@@ -98,6 +111,13 @@ namespace FCP
             this.btnAddFolder.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnAddFolder.Click += new System.EventHandler(this.btnAddFolder_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            // 
             // btnRemoveSelected
             // 
             this.btnRemoveSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -107,13 +127,25 @@ namespace FCP
             this.btnRemoveSelected.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnRemoveSelected.Click += new System.EventHandler(this.btnRemoveSelected_Click);
             // 
-            // toolStripSeparator1
+            // btnRemoveAll
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            this.btnRemoveAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRemoveAll.Name = "btnRemoveAll";
+            this.btnRemoveAll.Size = new System.Drawing.Size(89, 24);
+            this.btnRemoveAll.Text = "Remove All";
+            this.btnRemoveAll.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnRemoveAll.Click += new System.EventHandler(this.btnRemoveAll_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
             // 
             // btnCompress
             // 
+            this.btnCompress.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCompress.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCompress.Name = "btnCompress";
             this.btnCompress.Size = new System.Drawing.Size(78, 24);
@@ -132,9 +164,7 @@ namespace FCP
             // 
             // mainPanel
             // 
-            this.mainPanel.Controls.Add(this.groupProcessStatus);
-            this.mainPanel.Controls.Add(this.groupBoxOptions);
-            this.mainPanel.Controls.Add(this.fileListView);
+            this.mainPanel.Controls.Add(this.tableLayoutPanel1);
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 27);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(4);
@@ -143,10 +173,25 @@ namespace FCP
             this.mainPanel.Size = new System.Drawing.Size(1045, 691);
             this.mainPanel.TabIndex = 3;
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.groupProcessStatus, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.groupBoxOptions, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.fileListView, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 6);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 86.57487F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.42513F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 97F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1031, 679);
+            this.tableLayoutPanel1.TabIndex = 4;
+            // 
             // groupProcessStatus
             // 
-            this.groupProcessStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupProcessStatus.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.groupProcessStatus.Controls.Add(this.lblOutputPathValue);
             this.groupProcessStatus.Controls.Add(this.lblCompressionRatioValue);
@@ -157,13 +202,14 @@ namespace FCP
             this.groupProcessStatus.Controls.Add(this.btnPauseResume);
             this.groupProcessStatus.Controls.Add(this.btnCancel);
             this.groupProcessStatus.Controls.Add(this.progressBar);
+            this.groupProcessStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupProcessStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupProcessStatus.Location = new System.Drawing.Point(11, 593);
+            this.groupProcessStatus.Location = new System.Drawing.Point(4, 585);
             this.groupProcessStatus.Margin = new System.Windows.Forms.Padding(4);
             this.groupProcessStatus.Name = "groupProcessStatus";
             this.groupProcessStatus.Padding = new System.Windows.Forms.Padding(4);
-            this.groupProcessStatus.Size = new System.Drawing.Size(1024, 89);
-            this.groupProcessStatus.TabIndex = 3;
+            this.groupProcessStatus.Size = new System.Drawing.Size(1023, 90);
+            this.groupProcessStatus.TabIndex = 4;
             this.groupProcessStatus.TabStop = false;
             this.groupProcessStatus.Text = "Process Status";
             // 
@@ -234,27 +280,25 @@ namespace FCP
             // 
             this.btnPauseResume.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPauseResume.Enabled = false;
-            this.btnPauseResume.Location = new System.Drawing.Point(808, 53);
+            this.btnPauseResume.Location = new System.Drawing.Point(807, 54);
             this.btnPauseResume.Margin = new System.Windows.Forms.Padding(4);
             this.btnPauseResume.Name = "btnPauseResume";
             this.btnPauseResume.Size = new System.Drawing.Size(100, 28);
             this.btnPauseResume.TabIndex = 2;
             this.btnPauseResume.Text = "Pause";
             this.btnPauseResume.UseVisualStyleBackColor = true;
-            this.btnPauseResume.Click += new System.EventHandler(this.btnPauseResume_Click);
             // 
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.Enabled = false;
-            this.btnCancel.Location = new System.Drawing.Point(916, 53);
+            this.btnCancel.Location = new System.Drawing.Point(915, 54);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 28);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // progressBar
             // 
@@ -263,89 +307,143 @@ namespace FCP
             this.progressBar.Location = new System.Drawing.Point(8, 53);
             this.progressBar.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(792, 28);
+            this.progressBar.Size = new System.Drawing.Size(791, 28);
             this.progressBar.TabIndex = 0;
             // 
             // groupBoxOptions
             // 
-            this.groupBoxOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxOptions.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.groupBoxOptions.Controls.Add(this.txtPassword);
-            this.groupBoxOptions.Controls.Add(this.chkPassword);
-            this.groupBoxOptions.Controls.Add(this.radioHuffman);
-            this.groupBoxOptions.Controls.Add(this.radioShannonFano);
-            this.groupBoxOptions.Location = new System.Drawing.Point(11, 541);
+            this.groupBoxOptions.Controls.Add(this.tableLayoutPanel2);
+            this.groupBoxOptions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxOptions.Location = new System.Drawing.Point(4, 507);
             this.groupBoxOptions.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxOptions.Name = "groupBoxOptions";
             this.groupBoxOptions.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxOptions.Size = new System.Drawing.Size(1024, 44);
-            this.groupBoxOptions.TabIndex = 1;
+            this.groupBoxOptions.Size = new System.Drawing.Size(1023, 70);
+            this.groupBoxOptions.TabIndex = 2;
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 2F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49F));
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.splitter1, 1, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 19);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1015, 47);
+            this.tableLayoutPanel2.TabIndex = 4;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 38.00813F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 61.99187F));
+            this.tableLayoutPanel4.Controls.Add(this.txtPassword, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.chkPassword, 0, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(520, 3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 41);
+            this.tableLayoutPanel4.TabIndex = 2;
+            // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(633, 19);
+            this.txtPassword.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtPassword.Location = new System.Drawing.Point(191, 4);
             this.txtPassword.Margin = new System.Windows.Forms.Padding(4);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(205, 22);
-            this.txtPassword.TabIndex = 3;
+            this.txtPassword.Size = new System.Drawing.Size(297, 22);
+            this.txtPassword.TabIndex = 4;
             // 
             // chkPassword
             // 
             this.chkPassword.AutoSize = true;
-            this.chkPassword.Location = new System.Drawing.Point(461, 21);
+            this.chkPassword.Location = new System.Drawing.Point(4, 4);
             this.chkPassword.Margin = new System.Windows.Forms.Padding(4);
             this.chkPassword.Name = "chkPassword";
             this.chkPassword.Size = new System.Drawing.Size(162, 20);
-            this.chkPassword.TabIndex = 2;
+            this.chkPassword.TabIndex = 3;
             this.chkPassword.Text = "Encrypt with Password";
             this.chkPassword.UseVisualStyleBackColor = true;
             this.chkPassword.CheckedChanged += new System.EventHandler(this.chkPassword_CheckedChanged);
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35.03055F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 64.96945F));
+            this.tableLayoutPanel3.Controls.Add(this.radioShannonFano, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.radioHuffman, 0, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 41);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // radioShannonFano
+            // 
+            this.radioShannonFano.AutoSize = true;
+            this.radioShannonFano.Location = new System.Drawing.Point(176, 4);
+            this.radioShannonFano.Margin = new System.Windows.Forms.Padding(4);
+            this.radioShannonFano.Name = "radioShannonFano";
+            this.radioShannonFano.Size = new System.Drawing.Size(116, 20);
+            this.radioShannonFano.TabIndex = 2;
+            this.radioShannonFano.Text = "Shannon-Fano";
+            this.radioShannonFano.UseVisualStyleBackColor = true;
             // 
             // radioHuffman
             // 
             this.radioHuffman.AutoSize = true;
             this.radioHuffman.Checked = true;
-            this.radioHuffman.Location = new System.Drawing.Point(21, 20);
+            this.radioHuffman.Location = new System.Drawing.Point(4, 4);
             this.radioHuffman.Margin = new System.Windows.Forms.Padding(4);
             this.radioHuffman.Name = "radioHuffman";
             this.radioHuffman.Size = new System.Drawing.Size(136, 20);
-            this.radioHuffman.TabIndex = 0;
+            this.radioHuffman.TabIndex = 1;
             this.radioHuffman.TabStop = true;
             this.radioHuffman.Text = "Huffman Algorithm";
             this.radioHuffman.UseVisualStyleBackColor = true;
             // 
-            // radioShannonFano
+            // splitter1
             // 
-            this.radioShannonFano.AutoSize = true;
-            this.radioShannonFano.Location = new System.Drawing.Point(172, 20);
-            this.radioShannonFano.Margin = new System.Windows.Forms.Padding(4);
-            this.radioShannonFano.Name = "radioShannonFano";
-            this.radioShannonFano.Size = new System.Drawing.Size(116, 20);
-            this.radioShannonFano.TabIndex = 1;
-            this.radioShannonFano.Text = "Shannon-Fano";
-            this.radioShannonFano.UseVisualStyleBackColor = true;
+            this.splitter1.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.splitter1.Location = new System.Drawing.Point(500, 3);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 41);
+            this.splitter1.TabIndex = 1;
+            this.splitter1.TabStop = false;
             // 
             // fileListView
             // 
-            this.fileListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.fileListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colFileName,
             this.colSize,
             this.colPath});
+            this.fileListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fileListView.FullRowSelect = true;
             this.fileListView.GridLines = true;
             this.fileListView.HideSelection = false;
-            this.fileListView.Location = new System.Drawing.Point(7, 6);
+            this.fileListView.Location = new System.Drawing.Point(4, 4);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(1031, 527);
-            this.fileListView.TabIndex = 0;
+            this.fileListView.Size = new System.Drawing.Size(1023, 495);
+            this.fileListView.TabIndex = 1;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
             // 
@@ -357,13 +455,12 @@ namespace FCP
             // colSize
             // 
             this.colSize.Text = "Size";
-            this.colSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.colSize.Width = 100;
+            this.colSize.Width = 166;
             // 
             // colPath
             // 
             this.colPath.Text = "Path";
-            this.colPath.Width = 400;
+            this.colPath.Width = 635;
             // 
             // MainForm
             // 
@@ -377,13 +474,19 @@ namespace FCP
             this.MinimumSize = new System.Drawing.Size(794, 481);
             this.Name = "MainForm";
             this.Text = "C# Multimedia Compressor";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.mainToolStrip.ResumeLayout(false);
             this.mainToolStrip.PerformLayout();
             this.mainPanel.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.groupProcessStatus.ResumeLayout(false);
             this.groupProcessStatus.PerformLayout();
             this.groupBoxOptions.ResumeLayout(false);
-            this.groupBoxOptions.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -394,28 +497,35 @@ namespace FCP
         private System.Windows.Forms.ToolStripButton btnAddFiles;
         private System.Windows.Forms.ToolStripButton btnAddFolder;
         private System.Windows.Forms.ToolStripButton btnRemoveSelected;
+        private System.Windows.Forms.ToolStripButton btnRemoveAll;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton btnCompress;
         private System.Windows.Forms.ToolStripButton btnExtract;
         private System.Windows.Forms.Panel mainPanel;
-        private System.Windows.Forms.ListView fileListView;
-        private System.Windows.Forms.GroupBox groupBoxOptions;
-        private System.Windows.Forms.CheckBox chkPassword;
-        private System.Windows.Forms.RadioButton radioHuffman;
-        private System.Windows.Forms.RadioButton radioShannonFano;
-        private System.Windows.Forms.ColumnHeader colFileName;
-        private System.Windows.Forms.ColumnHeader colSize;
-        private System.Windows.Forms.ColumnHeader colPath;
-        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox groupProcessStatus;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.Button btnPauseResume;
         private System.Windows.Forms.Label lblOutputPathValue;
         private System.Windows.Forms.Label lblCompressionRatioValue;
         private System.Windows.Forms.Label lblCurrentActionValue;
         private System.Windows.Forms.Label lblOutputPath;
         private System.Windows.Forms.Label lblCompressionRatio;
         private System.Windows.Forms.Label lblCurrentAction;
+        private System.Windows.Forms.Button btnPauseResume;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.GroupBox groupBoxOptions;
+        private System.Windows.Forms.ListView fileListView;
+        private System.Windows.Forms.ColumnHeader colFileName;
+        private System.Windows.Forms.ColumnHeader colSize;
+        private System.Windows.Forms.ColumnHeader colPath;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Splitter splitter1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.CheckBox chkPassword;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.RadioButton radioShannonFano;
+        private System.Windows.Forms.RadioButton radioHuffman;
     }
 }
