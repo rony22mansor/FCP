@@ -89,24 +89,27 @@ namespace FCP
             this.btnExtract});
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
             this.mainToolStrip.Name = "mainToolStrip";
-            this.mainToolStrip.Size = new System.Drawing.Size(1045, 27);
+            this.mainToolStrip.Size = new System.Drawing.Size(1045, 59);
             this.mainToolStrip.TabIndex = 1;
             this.mainToolStrip.Text = "toolStrip1";
             // 
             // btnAddFiles
             // 
+            this.btnAddFiles.Image = global::FCP.Properties.Resources.add_file;
             this.btnAddFiles.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAddFiles.Name = "btnAddFiles";
-            this.btnAddFiles.Size = new System.Drawing.Size(74, 24);
+            this.btnAddFiles.Size = new System.Drawing.Size(74, 56);
             this.btnAddFiles.Text = "Add Files";
             this.btnAddFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
             // 
             // btnAddFolder
             // 
+            this.btnAddFolder.Image = global::FCP.Properties.Resources.add_folder;
             this.btnAddFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAddFolder.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
             this.btnAddFolder.Name = "btnAddFolder";
-            this.btnAddFolder.Size = new System.Drawing.Size(87, 24);
+            this.btnAddFolder.Size = new System.Drawing.Size(87, 56);
             this.btnAddFolder.Text = "Add Folder";
             this.btnAddFolder.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnAddFolder.Click += new System.EventHandler(this.btnAddFolder_Click);
@@ -116,23 +119,26 @@ namespace FCP
             this.toolStripSeparator1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             // 
             // btnRemoveSelected
             // 
+            this.btnRemoveSelected.Image = global::FCP.Properties.Resources.remove_selected;
             this.btnRemoveSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRemoveSelected.Name = "btnRemoveSelected";
-            this.btnRemoveSelected.Size = new System.Drawing.Size(128, 24);
+            this.btnRemoveSelected.Size = new System.Drawing.Size(128, 56);
             this.btnRemoveSelected.Text = "Remove Selected";
             this.btnRemoveSelected.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnRemoveSelected.Click += new System.EventHandler(this.btnRemoveSelected_Click);
             // 
             // btnRemoveAll
             // 
+            this.btnRemoveAll.Image = global::FCP.Properties.Resources.reset;
             this.btnRemoveAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRemoveAll.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
             this.btnRemoveAll.Name = "btnRemoveAll";
-            this.btnRemoveAll.Size = new System.Drawing.Size(89, 24);
-            this.btnRemoveAll.Text = "Remove All";
+            this.btnRemoveAll.Size = new System.Drawing.Size(49, 56);
+            this.btnRemoveAll.Text = "Reset";
             this.btnRemoveAll.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnRemoveAll.Click += new System.EventHandler(this.btnRemoveAll_Click);
             // 
@@ -141,23 +147,25 @@ namespace FCP
             this.toolStripSeparator2.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
             // 
             // btnCompress
             // 
-            this.btnCompress.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCompress.Image = global::FCP.Properties.Resources.compress;
             this.btnCompress.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCompress.Name = "btnCompress";
-            this.btnCompress.Size = new System.Drawing.Size(78, 24);
+            this.btnCompress.Size = new System.Drawing.Size(78, 56);
             this.btnCompress.Text = "Compress";
             this.btnCompress.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnCompress.Click += new System.EventHandler(this.btnCompress_Click);
             // 
             // btnExtract
             // 
+            this.btnExtract.Image = global::FCP.Properties.Resources.extract;
             this.btnExtract.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnExtract.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
             this.btnExtract.Name = "btnExtract";
-            this.btnExtract.Size = new System.Drawing.Size(58, 24);
+            this.btnExtract.Size = new System.Drawing.Size(58, 56);
             this.btnExtract.Text = "Extract";
             this.btnExtract.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnExtract.Click += new System.EventHandler(this.btnExtract_Click);
@@ -166,11 +174,11 @@ namespace FCP
             // 
             this.mainPanel.Controls.Add(this.tableLayoutPanel1);
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(0, 27);
+            this.mainPanel.Location = new System.Drawing.Point(0, 59);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(4);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.mainPanel.Size = new System.Drawing.Size(1045, 691);
+            this.mainPanel.Size = new System.Drawing.Size(1045, 659);
             this.mainPanel.TabIndex = 3;
             // 
             // tableLayoutPanel1
@@ -187,7 +195,7 @@ namespace FCP
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 86.57487F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.42513F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 97F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1031, 679);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1031, 647);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // groupProcessStatus
@@ -204,7 +212,7 @@ namespace FCP
             this.groupProcessStatus.Controls.Add(this.progressBar);
             this.groupProcessStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupProcessStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupProcessStatus.Location = new System.Drawing.Point(4, 585);
+            this.groupProcessStatus.Location = new System.Drawing.Point(4, 553);
             this.groupProcessStatus.Margin = new System.Windows.Forms.Padding(4);
             this.groupProcessStatus.Name = "groupProcessStatus";
             this.groupProcessStatus.Padding = new System.Windows.Forms.Padding(4);
@@ -315,11 +323,11 @@ namespace FCP
             this.groupBoxOptions.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.groupBoxOptions.Controls.Add(this.tableLayoutPanel2);
             this.groupBoxOptions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxOptions.Location = new System.Drawing.Point(4, 507);
+            this.groupBoxOptions.Location = new System.Drawing.Point(4, 480);
             this.groupBoxOptions.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxOptions.Name = "groupBoxOptions";
             this.groupBoxOptions.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxOptions.Size = new System.Drawing.Size(1023, 70);
+            this.groupBoxOptions.Size = new System.Drawing.Size(1023, 65);
             this.groupBoxOptions.TabIndex = 2;
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
@@ -339,7 +347,7 @@ namespace FCP
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1015, 47);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1015, 42);
             this.tableLayoutPanel2.TabIndex = 4;
             // 
             // tableLayoutPanel4
@@ -355,7 +363,7 @@ namespace FCP
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 41);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 36);
             this.tableLayoutPanel4.TabIndex = 2;
             // 
             // txtPassword
@@ -393,7 +401,7 @@ namespace FCP
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 41);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 36);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // radioShannonFano
@@ -425,7 +433,7 @@ namespace FCP
             this.splitter1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.splitter1.Location = new System.Drawing.Point(500, 3);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 41);
+            this.splitter1.Size = new System.Drawing.Size(3, 36);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
@@ -442,7 +450,7 @@ namespace FCP
             this.fileListView.Location = new System.Drawing.Point(4, 4);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(1023, 495);
+            this.fileListView.Size = new System.Drawing.Size(1023, 468);
             this.fileListView.TabIndex = 1;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
