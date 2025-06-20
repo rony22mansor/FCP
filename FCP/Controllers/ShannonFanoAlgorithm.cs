@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FCP.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,7 @@ namespace FCP.Controllers
     /// <summary>
     /// Implements the Shannon-Fano compression and decompression algorithm.
     /// </summary>
-    public class ShannonFanoAlgorithm 
+    public class ShannonFanoAlgorithm : CompressInterface
     {
         // The main public method for compression.
         public byte[] Compress(byte[] data)

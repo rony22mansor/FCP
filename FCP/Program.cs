@@ -22,14 +22,14 @@ namespace FCP
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
 
-            //byte[] fileData = File.ReadAllBytes("R:\\MultiMedia\\final project\\test.txt");
+            //byte[] fileData = File.ReadAllBytes("R:\\MultiMedia\\final project\\image.png");
             //foreach (var item in fileData)
             //{
             //    Console.WriteLine("fileData: " + (item));
             //}
             //Console.WriteLine("==============");
-            //var shannonFano = new ShannonFanoAlgorithm();
-            //var cd = shannonFano.Compress(fileData);
+            //var huffman = new HuffmanAlgorithm();
+            //var cd = huffman.Compress(fileData);
             //foreach (var item in cd)
             //{
             //    Console.WriteLine("cd: " + (item));
@@ -38,13 +38,13 @@ namespace FCP
 
             //Console.WriteLine("==============");
 
-            //var undo_cd = shannonFano.Decompress(cd);
+            //var undo_cd = huffman.Decompress(cd);
             //foreach (var item in undo_cd)
             //{
             //    Console.WriteLine("undo_cd: " + (item));
             //}
 
-            //File.WriteAllBytes("R:\\MultiMedia\\final project\\test_decompress.txt", undo_cd);
+            //File.WriteAllBytes("R:\\MultiMedia\\final project\\image_decompressed.png", undo_cd);
         }
     }
 }

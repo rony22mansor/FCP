@@ -77,6 +77,9 @@ namespace FCP
             // 
             // mainToolStrip
             // 
+            this.mainToolStrip.AllowMerge = false;
+            this.mainToolStrip.CanOverflow = false;
+            this.mainToolStrip.GripMargin = new System.Windows.Forms.Padding(0);
             this.mainToolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAddFiles,
@@ -87,9 +90,12 @@ namespace FCP
             this.toolStripSeparator2,
             this.btnCompress,
             this.btnExtract});
+            this.mainToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
             this.mainToolStrip.Name = "mainToolStrip";
+            this.mainToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.mainToolStrip.Size = new System.Drawing.Size(1045, 59);
+            this.mainToolStrip.Stretch = true;
             this.mainToolStrip.TabIndex = 1;
             this.mainToolStrip.Text = "toolStrip1";
             // 
@@ -119,7 +125,7 @@ namespace FCP
             this.toolStripSeparator1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 59);
             // 
             // btnRemoveSelected
             // 
@@ -147,7 +153,7 @@ namespace FCP
             this.toolStripSeparator2.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 59);
             // 
             // btnCompress
             // 
@@ -346,7 +352,7 @@ namespace FCP
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(1015, 42);
             this.tableLayoutPanel2.TabIndex = 4;
             // 
@@ -362,7 +368,7 @@ namespace FCP
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 36);
             this.tableLayoutPanel4.TabIndex = 2;
             // 
@@ -400,7 +406,7 @@ namespace FCP
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 36);
             this.tableLayoutPanel3.TabIndex = 0;
             // 

@@ -1,4 +1,6 @@
-﻿using FCP.Helpers;
+﻿using FCP.Controllers;
+using FCP.Helpers;
+using FCP.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,7 +22,7 @@ namespace FCP
     {
         // Flag to track the paused state of an operation
         private bool isPaused = false;
-
+        private System.Threading.CancellationTokenSource _cancellationTokenSource;
         public MainForm()
         {
             InitializeComponent();
@@ -36,7 +39,13 @@ namespace FCP
         // Event handler for the "Add Files" button
         private void btnAddFiles_Click(object sender, EventArgs e)
         {
-            // Use an OpenFileDialog to let the user select multiple files.
+            if (fileListView.Items.Count > 0)
+            {
+                foreach (ListViewItem Item in fileListView.Items)
+                {
+                    fileListView.Items.Remove(Item);
+                }
+            }
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Title = "Select Files to Add";
@@ -62,7 +71,9 @@ namespace FCP
                         item.SubItems.Add(FilesFoldersHelper.FormatBytes(fileInfo.Length));
                         // Column 3: The full path of the file.
                         item.SubItems.Add(fileInfo.FullName);
-
+                        // THE FIX IS HERE: Ensure the Tag property is always set.
+                        // The Tag stores the full path needed for reading the file.
+                        item.Tag = fileInfo.FullName;
                         // Add the fully prepared item to the ListView.
                         fileListView.Items.Add(item);
                     }
@@ -73,6 +84,13 @@ namespace FCP
         // Event handler for the "Add Folder" button
         private void btnAddFolder_Click(object sender, EventArgs e)
         {
+            if (fileListView.Items.Count > 0)
+            {
+                foreach (ListViewItem Item in fileListView.Items)
+                {
+                    fileListView.Items.Remove(Item);
+                }
+            }
             using (var dialog = new FolderBrowserDialog())
             {
                 dialog.Description = "Select a folder to add";
@@ -108,12 +126,8 @@ namespace FCP
         // Event handler for the "Remove All" button
         private void btnRemoveAll_Click(object sender, EventArgs e)
         {
-            // Check if there are any selected items to avoid errors.
             if (fileListView.Items.Count > 0)
             {
-                // Loop through all selected items and remove them.
-                // It's safe to use a foreach loop here because we are iterating
-                // over a copy of the selected items, not the list itself.
                 foreach (ListViewItem Item in fileListView.Items)
                 {
                     fileListView.Items.Remove(Item);
@@ -126,16 +140,76 @@ namespace FCP
         }
 
         // Event handler for the "Compress" button
-        private void btnCompress_Click(object sender, EventArgs e)
+        private async void btnCompress_Click(object sender, EventArgs e)
         {
-            // TODO: This is where the main compression logic will be triggered.
-            // 1. Get the list of files/folders from the ListView.
-            // 2. Ask the user for a save location for the archive.
-            // 3. Get the selected algorithm (Huffman/Shannon-Fano).
-            // 4. If password protection is enabled, get the password.
-            // 5. Start the compression on a background thread (using async/await and a CancellationTokenSource).
-            // 6. Update the progress bar and status labels.
-            MessageBox.Show("Compress button clicked!");
+            if (fileListView.Items.Count == 0)
+            {
+                MessageBox.Show("Please add files to compress.", "No Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 1. Prompt user for save location
+            using (SaveFileDialog dialog = new SaveFileDialog())
+            {
+                dialog.Filter = "FCP Archive (*.fcp)|*.fcp";
+                dialog.Title = "Save Archive As";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+
+                // 2. Prepare for compression
+                string outputArchivePath = dialog.FileName;
+                var filesToArchive = new Dictionary<string, string>();
+                foreach (ListViewItem item in fileListView.Items)
+                {
+                    // Key: Full path, Value: Relative path
+                    filesToArchive[item.Tag.ToString()] = item.SubItems[2].Text;
+                }
+
+                CompressInterface algorithm = radioHuffman.Checked ? (CompressInterface)new HuffmanAlgorithm() : new ShannonFanoAlgorithm();
+                var writer = new ArchiveWriter(algorithm);
+
+                _cancellationTokenSource = new System.Threading.CancellationTokenSource();
+
+                SetUIState(true);
+                //lblStatus.Text = "Compressing...";
+                lblCurrentActionValue.Text = "Preparing...";
+
+                try
+                {
+                    // 3. Run the compression on a background thread
+                    await Task.Run(() => writer.CreateArchive(filesToArchive, outputArchivePath), _cancellationTokenSource.Token);
+
+                    // 4. Update UI on completion
+                    //lblStatus.Text = "Ready";
+                    lblCurrentActionValue.Text = "Completed!";
+                    lblOutputPathValue.Text = outputArchivePath;
+
+                    // Calculate and display compression ratio
+                    long originalSize = filesToArchive.Keys.Sum(path => new FileInfo(path).Length);
+                    long compressedSize = new FileInfo(outputArchivePath).Length;
+                    double ratio = (double)compressedSize / originalSize;
+                    lblCompressionRatioValue.Text = $"{ratio:P2}"; // Format as percentage
+
+                    MessageBox.Show("Compression completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (OperationCanceledException)
+                {
+                    //lblStatus.Text = "Cancelled";
+                    lblCurrentActionValue.Text = "Operation was cancelled.";
+                    // Clean up partially created file
+                    if (File.Exists(outputArchivePath)) File.Delete(outputArchivePath);
+                }
+                catch (Exception ex)
+                {
+                    //lblStatus.Text = "Error";
+                    MessageBox.Show($"An error occurred during compression: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    // 5. Reset UI state
+                    SetUIState(false);
+                    _cancellationTokenSource.Dispose();
+                }
+            }
         }
 
         // Event handler for the "Extract" button
@@ -207,6 +281,22 @@ namespace FCP
             colPath.Width = totalWidth - colFileName.Width - colSize.Width; // The rest for Path
         }
 
+        private void SetUIState(bool isProcessing)
+        {
+            // Disable/enable controls based on whether an operation is running.
+            mainToolStrip.Enabled = !isProcessing;
+            groupBoxOptions.Enabled = !isProcessing;
+            btnPauseResume.Enabled = isProcessing;
+            btnCancel.Enabled = isProcessing;
+
+            if (!isProcessing)
+            {
+                // Reset UI elements after completion or cancellation.
+                progressBar.Value = 0;
+                lblCurrentActionValue.Text = "...";
+                btnPauseResume.Text = "Pause";
+            }
+        }
 
     }
 }

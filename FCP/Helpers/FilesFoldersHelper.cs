@@ -48,11 +48,6 @@ namespace FCP.Helpers
                     AddAllFilesFromFolder(directoryPath, rootPath, fileListView);
                 }
             }
-            catch (UnauthorizedAccessException)
-            {
-                // Silently ignore folders that the program doesn't have permission to read.
-                // This prevents the whole process from stopping on a protected system folder.
-            }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while adding a folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
