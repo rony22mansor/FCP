@@ -46,6 +46,7 @@ namespace FCP
             this.lblOutputPathValue = new System.Windows.Forms.Label();
             this.lblCompressionRatioValue = new System.Windows.Forms.Label();
             this.lblCurrentActionValue = new System.Windows.Forms.Label();
+            this.lblCurrentFile = new System.Windows.Forms.Label();
             this.lblOutputPath = new System.Windows.Forms.Label();
             this.lblCompressionRatio = new System.Windows.Forms.Label();
             this.lblCurrentAction = new System.Windows.Forms.Label();
@@ -171,8 +172,8 @@ namespace FCP
             this.btnExtract.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnExtract.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
             this.btnExtract.Name = "btnExtract";
-            this.btnExtract.Size = new System.Drawing.Size(58, 56);
-            this.btnExtract.Text = "Extract";
+            this.btnExtract.Size = new System.Drawing.Size(95, 56);
+            this.btnExtract.Text = "Decompress";
             this.btnExtract.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnExtract.Click += new System.EventHandler(this.btnExtract_Click);
             // 
@@ -210,6 +211,7 @@ namespace FCP
             this.groupProcessStatus.Controls.Add(this.lblOutputPathValue);
             this.groupProcessStatus.Controls.Add(this.lblCompressionRatioValue);
             this.groupProcessStatus.Controls.Add(this.lblCurrentActionValue);
+            this.groupProcessStatus.Controls.Add(this.lblCurrentFile);
             this.groupProcessStatus.Controls.Add(this.lblOutputPath);
             this.groupProcessStatus.Controls.Add(this.lblCompressionRatio);
             this.groupProcessStatus.Controls.Add(this.lblCurrentAction);
@@ -230,7 +232,7 @@ namespace FCP
             // lblOutputPathValue
             // 
             this.lblOutputPathValue.AutoSize = true;
-            this.lblOutputPathValue.Location = new System.Drawing.Point(607, 28);
+            this.lblOutputPathValue.Location = new System.Drawing.Point(724, 28);
             this.lblOutputPathValue.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblOutputPathValue.Name = "lblOutputPathValue";
             this.lblOutputPathValue.Size = new System.Drawing.Size(16, 16);
@@ -240,7 +242,7 @@ namespace FCP
             // lblCompressionRatioValue
             // 
             this.lblCompressionRatioValue.AutoSize = true;
-            this.lblCompressionRatioValue.Location = new System.Drawing.Point(398, 28);
+            this.lblCompressionRatioValue.Location = new System.Drawing.Point(463, 27);
             this.lblCompressionRatioValue.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCompressionRatioValue.Name = "lblCompressionRatioValue";
             this.lblCompressionRatioValue.Size = new System.Drawing.Size(16, 16);
@@ -257,11 +259,22 @@ namespace FCP
             this.lblCurrentActionValue.TabIndex = 7;
             this.lblCurrentActionValue.Text = "...";
             // 
+            // lblCurrentFile
+            // 
+            this.lblCurrentFile.AutoSize = true;
+            this.lblCurrentFile.BackColor = System.Drawing.Color.Transparent;
+            this.lblCurrentFile.Location = new System.Drawing.Point(395, 59);
+            this.lblCurrentFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCurrentFile.Name = "lblCurrentFile";
+            this.lblCurrentFile.Size = new System.Drawing.Size(16, 16);
+            this.lblCurrentFile.TabIndex = 10;
+            this.lblCurrentFile.Text = "...";
+            // 
             // lblOutputPath
             // 
             this.lblOutputPath.AutoSize = true;
             this.lblOutputPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F);
-            this.lblOutputPath.Location = new System.Drawing.Point(523, 27);
+            this.lblOutputPath.Location = new System.Drawing.Point(640, 27);
             this.lblOutputPath.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblOutputPath.Name = "lblOutputPath";
             this.lblOutputPath.Size = new System.Drawing.Size(78, 16);
@@ -272,7 +285,7 @@ namespace FCP
             // 
             this.lblCompressionRatio.AutoSize = true;
             this.lblCompressionRatio.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F);
-            this.lblCompressionRatio.Location = new System.Drawing.Point(265, 28);
+            this.lblCompressionRatio.Location = new System.Drawing.Point(330, 27);
             this.lblCompressionRatio.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCompressionRatio.Name = "lblCompressionRatio";
             this.lblCompressionRatio.Size = new System.Drawing.Size(125, 16);
@@ -313,6 +326,7 @@ namespace FCP
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // progressBar
             // 
@@ -485,10 +499,13 @@ namespace FCP
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.mainToolStrip);
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.MinimumSize = new System.Drawing.Size(794, 481);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(1063, 765);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(1063, 765);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "C# Multimedia Compressor";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.mainToolStrip.ResumeLayout(false);
             this.mainToolStrip.PerformLayout();
             this.mainPanel.ResumeLayout(false);
@@ -541,5 +558,6 @@ namespace FCP
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.RadioButton radioShannonFano;
         private System.Windows.Forms.RadioButton radioHuffman;
+        private System.Windows.Forms.Label lblCurrentFile;
     }
 }

@@ -29,11 +29,6 @@ namespace FCP
             // Initially hide the password text box
             txtPassword.Visible = false;
 
-            // Wire up the form's Resize event to our handler method.
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
-
-            // Call once at startup to set initial column sizes.
-            ResizeListViewColumns();
         }
 
         // Event handler for the "Add Files" button
@@ -169,14 +164,21 @@ namespace FCP
 
                 _cancellationTokenSource = new System.Threading.CancellationTokenSource();
 
+                Progress<ProgressInfo> progress = new Progress<ProgressInfo>(report =>
+                {
+                    // This code runs on the UI thread.
+                    progressBar.Value = report.Percentage;
+                    lblCurrentFile.Text = report.CurrentFile;
+                });
+
                 SetUIState(true);
                 //lblStatus.Text = "Compressing...";
-                lblCurrentActionValue.Text = "Preparing...";
+                lblCurrentActionValue.Text = "Compressing...";
 
                 try
                 {
                     // 3. Run the compression on a background thread
-                    await Task.Run(() => writer.CreateArchive(filesToArchive, outputArchivePath), _cancellationTokenSource.Token);
+                    await Task.Run(() => writer.CreateArchive(filesToArchive, outputArchivePath, progress), _cancellationTokenSource.Token);
 
                     // 4. Update UI on completion
                     //lblStatus.Text = "Ready";
@@ -190,11 +192,17 @@ namespace FCP
                     lblCompressionRatioValue.Text = $"{ratio:P2}"; // Format as percentage
 
                     MessageBox.Show("Compression completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    lblCompressionRatioValue.Text = "...";
+                    lblOutputPathValue.Text = "...";
+                    lblCurrentFile.Text = "...";
+                    lblCurrentActionValue.Text = "...";
+
                 }
                 catch (OperationCanceledException)
                 {
-                    //lblStatus.Text = "Cancelled";
-                    lblCurrentActionValue.Text = "Operation was cancelled.";
+
+                    lblCurrentActionValue.Text = "Operation was canceled.";
                     // Clean up partially created file
                     if (File.Exists(outputArchivePath)) File.Delete(outputArchivePath);
                 }
@@ -213,23 +221,78 @@ namespace FCP
         }
 
         // Event handler for the "Extract" button
-        private void btnExtract_Click(object sender, EventArgs e)
+        private async void btnExtract_Click(object sender, EventArgs e)
         {
-            // TODO: This is where the main extraction logic will be triggered.
-            // 1. Ask the user to select an archive file.
-            // 2. Display the archive contents in the ListView.
-            // 3. Ask the user for an extraction destination folder.
-            // 4. If the archive is encrypted, prompt for the password.
-            // 5. Start extraction on a background thread.
-            MessageBox.Show("Extract button clicked!");
+            string sourceArchivePath;
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Select Archive to Extract";
+                dialog.Filter = "FCP Archive (*.fcp)|*.fcp";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                sourceArchivePath = dialog.FileName;
+            }
+
+            string destinationDirectory;
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Select destination folder for extraction";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                destinationDirectory = dialog.SelectedPath;
+            }
+
+            var reader = new ArchiveReader();
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            var progress = new Progress<ProgressInfo>(report =>
+            {
+                progressBar.Value = report.Percentage;
+                lblCurrentActionValue.Text = report.CurrentFile;
+            });
+
+            SetUIState(true);
+            lblCurrentActionValue.Text = "Decompressing...";
+
+            try
+            {
+                await Task.Run(() => reader.ExtractArchive(sourceArchivePath, destinationDirectory,
+                                                           progress));
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    lblCurrentActionValue.Text = "Extraction was cancelled.";
+                }
+                else
+                {
+                    lblCurrentActionValue.Text = "Extraction Completed!";
+                    lblOutputPathValue.Text = destinationDirectory;
+                    MessageBox.Show("Extraction completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                lblCurrentActionValue.Text = "Extraction was cancelled.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during extraction: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                SetUIState(false);
+                _cancellationTokenSource.Dispose();
+            }
         }
 
         // Event handler for the "Cancel" button in the status panel
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            // TODO: Implement logic to cancel the ongoing operation.
-            // This will typically involve calling .Cancel() on a CancellationTokenSource.
-            MessageBox.Show("Cancel button clicked!");
+            Console.WriteLine("dadasdasdsad");
+            // Signal the CancellationTokenSource to cancel the operation.
+            if (_cancellationTokenSource != null)
+            {
+                Console.WriteLine("============");
+                _cancellationTokenSource.Cancel();
+            }
         }
 
         // Event handler for the combined Pause/Resume button
@@ -261,25 +324,7 @@ namespace FCP
         }
 
 
-        private void MainForm_Resize(object sender, EventArgs e)
-        {
-            ResizeListViewColumns();
-        }
 
-        /// <summary>
-        /// Adjusts the ListView column widths to be proportional to the control's width.
-        /// </summary>
-        private void ResizeListViewColumns()
-        {
-
-            // Get the total client width of the ListView, subtracting a little for the vertical scrollbar
-            int totalWidth = fileListView.ClientSize.Width;
-
-            // Set column widths proportionally
-            colFileName.Width = (int)(totalWidth * 0.30); // 30% for File Name
-            colSize.Width = (int)(totalWidth * 0.15);     // 15% for Size
-            colPath.Width = totalWidth - colFileName.Width - colSize.Width; // The rest for Path
-        }
 
         private void SetUIState(bool isProcessing)
         {

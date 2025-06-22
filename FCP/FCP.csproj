@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ArchiveReader.cs" />
     <Compile Include="Controllers\ArchiveWriter.cs" />
     <Compile Include="Controllers\HuffmanAlgorithm.cs" />
     <Compile Include="Controllers\ShannonFanoAlgorithm.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Models\ArchiveEntry.cs" />
     <Compile Include="Models\CompressInterface.cs" />
     <Compile Include="Models\Node.cs" />
+    <Compile Include="Models\ProgressInfo.cs" />
     <Compile Include="Views\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
