@@ -53,7 +53,13 @@ namespace FCP.Controllers
                     string sourcePath = fileEntry.Key;
                     string relativePath = fileEntry.Value;
 
-                    
+                    filesProcessed++;
+                    var report = new ProgressInfo
+                    {
+                        Percentage = (filesProcessed * 100) / totalFiles,
+                        CurrentFile = $"{Path.GetFileName(sourcePath)} ...Done!"
+                    };
+                    progress.Report(report);
 
                     byte[] originalData = File.ReadAllBytes(sourcePath);
                     byte[] compressedData = _algorithm.Compress(originalData);
@@ -66,13 +72,7 @@ namespace FCP.Controllers
                         OriginalSize = originalData.Length,
                         CompressedSize = compressedData.Length
                     };
-                    filesProcessed++;
-                    var report = new ProgressInfo
-                    {
-                        Percentage = (filesProcessed * 100) / totalFiles,
-                        CurrentFile = $"{Path.GetFileName(sourcePath)} ...Done!"
-                    };
-                    progress.Report(report);
+                   
                     WriteEntry(writer, entry, compressedData);
                 }
             }

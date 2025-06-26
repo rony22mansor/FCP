@@ -193,6 +193,7 @@ namespace FCP
 
                     MessageBox.Show("Compression completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                    fileListView.Items.Clear();
                     lblCompressionRatioValue.Text = "...";
                     lblOutputPathValue.Text = "...";
                     lblCurrentFile.Text = "...";
@@ -219,7 +220,39 @@ namespace FCP
                 }
             }
         }
+        // **NEW METHOD**
+        private void btnOpenArchive_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Open Archive";
+                dialog.Filter = "FCP Archive (*.fcp)|*.fcp";
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        var reader = new ArchiveReader();
+                        List<ArchiveEntry> entries = reader.ReadArchiveEntries(dialog.FileName);
 
+                        // Clear the list before showing the archive contents
+                        fileListView.Items.Clear();
+
+                        foreach (var entry in entries)
+                        {
+                            ListViewItem item = new ListViewItem(Path.GetFileName(entry.RelativePath));
+                            item.SubItems.Add(FilesFoldersHelper.FormatBytes(entry.OriginalSize));
+                            item.SubItems.Add(entry.RelativePath);
+                            item.Tag = entry;
+                            fileListView.Items.Add(item);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to open archive: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
         // Event handler for the "Extract" button
         private async void btnExtract_Click(object sender, EventArgs e)
         {

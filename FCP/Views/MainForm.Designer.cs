@@ -34,6 +34,7 @@ namespace FCP
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.btnAddFiles = new System.Windows.Forms.ToolStripButton();
             this.btnAddFolder = new System.Windows.Forms.ToolStripButton();
+            this.btnOpenArchive = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnRemoveSelected = new System.Windows.Forms.ToolStripButton();
             this.btnRemoveAll = new System.Windows.Forms.ToolStripButton();
@@ -85,6 +86,7 @@ namespace FCP
             this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnAddFiles,
             this.btnAddFolder,
+            this.btnOpenArchive,
             this.toolStripSeparator1,
             this.btnRemoveSelected,
             this.btnRemoveAll,
@@ -120,6 +122,15 @@ namespace FCP
             this.btnAddFolder.Text = "Add Folder";
             this.btnAddFolder.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnAddFolder.Click += new System.EventHandler(this.btnAddFolder_Click);
+            // 
+            // btnOpenArchive
+            // 
+            this.btnOpenArchive.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnOpenArchive.Name = "btnOpenArchive";
+            this.btnOpenArchive.Size = new System.Drawing.Size(103, 24);
+            this.btnOpenArchive.Text = "Open Archive";
+            this.btnOpenArchive.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnOpenArchive.Click += new System.EventHandler(this.btnOpenArchive_Click);
             // 
             // toolStripSeparator1
             // 
@@ -559,5 +570,7 @@ namespace FCP
         private System.Windows.Forms.RadioButton radioShannonFano;
         private System.Windows.Forms.RadioButton radioHuffman;
         private System.Windows.Forms.Label lblCurrentFile;
+        private System.Windows.Forms.ToolStripButton btnOpenArchive;
+
     }
 }
