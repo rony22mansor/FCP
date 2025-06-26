@@ -21,70 +21,76 @@ namespace FCP.Controllers
         /// <summary>
         /// Extracts all files from an archive to a specified destination directory.
         /// </summary>
-        public void ExtractArchive(string sourceArchivePath, string destinationDirectory,
-                                   IProgress<ProgressInfo> progress)
+        public void ExtractArchive(
+     string sourceArchivePath,
+     string destinationDirectory,
+     IProgress<ProgressInfo> progress,
+     CancellationToken token,
+     ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(sourceArchivePath, FileMode.Open))
             using (BinaryReader reader = new BinaryReader(archiveStream))
             {
-                // --- Read Main Archive Header ---
+                // قراءة الهيدر
                 string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
                 if (magic != "FCP_ARCH")
                 {
                     throw new InvalidDataException("The selected file is not a valid FCP archive.");
                 }
 
-                // **THE FIX IS HERE: Read the algorithm identifier.**
                 char algoIdentifier = reader.ReadChar();
                 CompressInterface selectedAlgorithm;
 
                 if (algoIdentifier == 'H')
                 {
-                    selectedAlgorithm = _huffman;
-                }
-                else if (algoIdentifier == 'S')
-                {
-                    selectedAlgorithm = _shannonFano;
+                    selectedAlgorithm = new HuffmanAlgorithm();
                 }
                 else
                 {
-                    throw new InvalidDataException("Archive contains an unknown compression algorithm identifier.");
+                    selectedAlgorithm = new ShannonFanoAlgorithm();
                 }
 
                 int totalFiles = reader.ReadInt32();
                 int filesProcessed = 0;
 
-                // --- Read File Entries ---
                 for (int i = 0; i < totalFiles; i++)
                 {
+                    // تحقق من الإلغاء بدون رمي استثناء
+                    if (token.IsCancellationRequested)
+                    {
+                        progress?.Report(new ProgressInfo
+                        {
+                            Percentage = (filesProcessed * 100) / totalFiles,
+                            CurrentFile = "Operation canceled by user."
+                        });
+                        return; // خروج هادئ من الدالة
+                    }
 
+                    // تحقق من الإيقاف المؤقت
+                    pauseEvent.Wait();
 
                     string relativePath = reader.ReadString();
                     long originalSize = reader.ReadInt64();
                     long compressedSize = reader.ReadInt64();
 
-                    
-
                     byte[] compressedData = reader.ReadBytes((int)compressedSize);
-
-                    // **Use the explicitly selected algorithm.**
                     byte[] decompressedData = selectedAlgorithm.Decompress(compressedData);
 
                     string destinationFilePath = Path.Combine(destinationDirectory, relativePath);
-
                     Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
-
                     File.WriteAllBytes(destinationFilePath, decompressedData);
 
                     filesProcessed++;
-                    var report = new ProgressInfo
+                    progress?.Report(new ProgressInfo
                     {
                         Percentage = (filesProcessed * 100) / totalFiles,
                         CurrentFile = $"{Path.GetFileName(relativePath)} ...Done!"
-                    };
-                    progress.Report(report);
+                    });
                 }
             }
         }
+
     }
-}
+
+
+  }

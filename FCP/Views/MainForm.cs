@@ -21,8 +21,9 @@ namespace FCP
     public partial class MainForm : Form
     {
         // Flag to track the paused state of an operation
+        private CancellationTokenSource _cancellationTokenSource;
+        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true); // يسمح بالمتابعة افتراضياً
         private bool isPaused = false;
-        private System.Threading.CancellationTokenSource _cancellationTokenSource;
         public MainForm()
         {
             InitializeComponent();
@@ -167,7 +168,7 @@ namespace FCP
                     : new ShannonFanoAlgorithm();
 
                 var writer = new ArchiveWriter(algorithm);
-                _cancellationTokenSource = new System.Threading.CancellationTokenSource();
+                _cancellationTokenSource = new CancellationTokenSource();
 
                 Progress<ProgressInfo> progress = new Progress<ProgressInfo>(report =>
                 {
@@ -181,9 +182,30 @@ namespace FCP
                 try
                 {
                     await Task.Run(
-                        () => writer.CreateArchive(filesToArchive, outputArchivePath, progress),
+                        () => writer.CreateArchive(
+                            filesToArchive,
+                            outputArchivePath,
+                            progress,
+                            _cancellationTokenSource.Token,
+                            _pauseEvent),
                         _cancellationTokenSource.Token
                     );
+
+                    // تحقق من الإلغاء قبل متابعة المعالجة
+                    if (_cancellationTokenSource.IsCancellationRequested)
+                    {
+                        lblCurrentActionValue.Text = "Operation was canceled.";
+                        if (File.Exists(outputArchivePath)) File.Delete(outputArchivePath);
+
+                        MessageBox.Show(
+                            "The compression operation was canceled successfully.",
+                            "Operation Canceled",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+
+                        return; // خروج دون عرض رسالة نجاح
+                    }
 
                     byte[] archiveBytes = File.ReadAllBytes(outputArchivePath);
 
@@ -238,6 +260,18 @@ namespace FCP
                 {
                     lblCurrentActionValue.Text = "Operation was canceled.";
                     if (File.Exists(outputArchivePath)) File.Delete(outputArchivePath);
+
+                    var result = MessageBox.Show(
+                        "The compression operation was canceled successfully.",
+                        "Operation Canceled",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+
+                    if (result == DialogResult.OK)
+                    {
+                        this.Close();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -255,6 +289,7 @@ namespace FCP
                 }
             }
         }
+
 
 
 
@@ -324,29 +359,55 @@ namespace FCP
                 File.WriteAllBytes(tempPath, actualData);
 
                 lblCurrentActionValue.Text = "Decompressing...";
-                await Task.Run(() => reader.ExtractArchive(tempPath, destinationDirectory, progress));
+                await Task.Run(
+                    () => reader.ExtractArchive(
+                        tempPath,
+                        destinationDirectory,
+                        progress,
+                        _cancellationTokenSource.Token,
+                        _pauseEvent),
+                    _cancellationTokenSource.Token
+                );
+
                 File.Delete(tempPath); // تنظيف الملف المؤقت
 
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
                     lblCurrentActionValue.Text = "Extraction was cancelled.";
-                }
-                else
-                {
-                    lblCurrentActionValue.Text = "Extraction Completed!";
-                    lblOutputPathValue.Text = destinationDirectory;
-
                     MessageBox.Show(
-                        "Extraction completed successfully!",
-                        "Success",
+                        "The extraction operation was canceled successfully.",
+                        "Operation Canceled",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
+                    return; // خروج بدون عرض رسالة نجاح
                 }
+
+                lblCurrentActionValue.Text = "Extraction Completed!";
+                lblOutputPathValue.Text = destinationDirectory;
+
+                MessageBox.Show(
+                    "Extraction completed successfully!",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
             }
             catch (OperationCanceledException)
             {
-                lblCurrentActionValue.Text = "Extraction was cancelled.";
+                lblCurrentActionValue.Text = "Extraction was canceled.";
+
+                var result = MessageBox.Show(
+                    "The extraction operation was canceled successfully.",
+                    "Operation Canceled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+
+                if (result == DialogResult.OK)
+                {
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -365,37 +426,26 @@ namespace FCP
         }
 
 
+       
 
         // Event handler for the "Cancel" button in the status panel
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("dadasdasdsad");
-            // Signal the CancellationTokenSource to cancel the operation.
-            if (_cancellationTokenSource != null)
-            {
-                Console.WriteLine("============");
-                _cancellationTokenSource.Cancel();
-            }
+            _cancellationTokenSource?.Cancel();
         }
 
         // Event handler for the combined Pause/Resume button
         private void btnPauseResume_Click(object sender, EventArgs e)
         {
-            isPaused = !isPaused; // Toggle the state
-
+            isPaused = !isPaused;
+            btnPauseResume.Text = isPaused ? "Resume" : "Pause";
             if (isPaused)
             {
-                btnPauseResume.Text = "Resume";
-                // TODO: Implement logic to pause the operation.
-                // This could involve using a ManualResetEventSlim to block the background thread.
-                MessageBox.Show("Operation Paused!");
+                _pauseEvent.Reset();
             }
             else
             {
-                btnPauseResume.Text = "Pause";
-                // TODO: Implement logic to resume the operation.
-                // This would signal the ManualResetEventSlim to unblock the background thread.
-                MessageBox.Show("Operation Resumed!");
+                _pauseEvent.Set();
             }
         }
 
