@@ -26,39 +26,47 @@ namespace FCP.Controllers
         /// and Value is the relative path to store in the archive.</param>
         /// <param name="outputArchivePath">The path where the final archive file will be saved.</param>
         /// <param name="progress">An object to report progress back to the UI.</param>
-        public void CreateArchive(Dictionary<string, string> filesToArchive, string outputArchivePath,
-                                  IProgress<ProgressInfo> progress)
+        public void CreateArchive(
+    Dictionary<string, string> filesToArchive,
+    string outputArchivePath,
+    IProgress<ProgressInfo> progress,
+    CancellationToken token,
+    ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(outputArchivePath, FileMode.Create))
             using (BinaryWriter writer = new BinaryWriter(archiveStream))
             {
-                // --- Main Archive Header ---
-                // 1. Magic Number
+                // كتابة الهيدر
                 writer.Write(Encoding.UTF8.GetBytes("FCP_ARCH"));
 
-                // 2. Algorithm Identifier (THE FIX IS HERE)
                 char algoIdentifier = (_algorithm is HuffmanAlgorithm) ? 'H' : 'S';
                 writer.Write(algoIdentifier);
-
-                // 3. File Count
                 writer.Write(filesToArchive.Count);
 
                 int filesProcessed = 0;
                 int totalFiles = filesToArchive.Count;
 
-                // --- File Entries ---
                 foreach (var fileEntry in filesToArchive)
                 {
+                    // تحقق من الإلغاء بدون رمي استثناء
+                    if (token.IsCancellationRequested)
+                    {
+                        progress?.Report(new ProgressInfo
+                        {
+                            Percentage = (filesProcessed * 100) / totalFiles,
+                            CurrentFile = "Operation canceled by user."
+                        });
+                        return; // خروج هادئ من الدالة
+                    }
+
+                    // تحقق من الإيقاف المؤقت
+                    pauseEvent.Wait();
 
                     string sourcePath = fileEntry.Key;
                     string relativePath = fileEntry.Value;
 
-                    
-
                     byte[] originalData = File.ReadAllBytes(sourcePath);
                     byte[] compressedData = _algorithm.Compress(originalData);
-
-                    if (compressedData == null) continue;
 
                     var entry = new ArchiveEntry
                     {
@@ -66,17 +74,20 @@ namespace FCP.Controllers
                         OriginalSize = originalData.Length,
                         CompressedSize = compressedData.Length
                     };
+
+                    WriteEntry(writer, entry, compressedData);
+
                     filesProcessed++;
-                    var report = new ProgressInfo
+                    progress?.Report(new ProgressInfo
                     {
                         Percentage = (filesProcessed * 100) / totalFiles,
                         CurrentFile = $"{Path.GetFileName(sourcePath)} ...Done!"
-                    };
-                    progress.Report(report);
-                    WriteEntry(writer, entry, compressedData);
+                    });
                 }
             }
         }
+
+
 
         private void WriteEntry(BinaryWriter writer, ArchiveEntry entry, byte[] data)
         {
