@@ -20,29 +20,45 @@ namespace FCP
 {
     public partial class MainForm : Form
     {
-        // Flag to track the paused state of an operation
-        private CancellationTokenSource _cancellationTokenSource;
-        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true);
-        private bool isPaused = false;
+        private System.Threading.CancellationTokenSource _cancellationTokenSource;
+        private System.Threading.ManualResetEventSlim _pauseEvent;
+        private string _currentOpenArchivePath;
+        private string _currentOperation;
         public MainForm()
         {
             InitializeComponent();
             // Initially hide the password text box
             txtPassword.Visible = false;
-            btnPauseResume.Text = "pause";
+        }
 
+        private void SetUIState(bool isProcessing, bool isArchiveOpen = false)
+        {
+            // Disable/enable controls based on whether an operation is running.
+            mainToolStrip.Enabled = !isProcessing;
+            groupBoxOptions.Enabled = !isProcessing;
+            btnPauseResume.Enabled = isProcessing;
+            btnCancel.Enabled = isProcessing;
+
+            btnAddFiles.Enabled = !isArchiveOpen && !isProcessing;
+            btnAddFolder.Enabled = !isArchiveOpen && !isProcessing;
+            btnCompress.Enabled = !isArchiveOpen && !isProcessing;
+            btnRemoveSelected.Enabled = !isArchiveOpen && !isProcessing;
+            btnDecompress.Enabled = !isArchiveOpen && !isProcessing;
+
+            if (!isProcessing)
+            {
+                // Reset UI elements after completion or cancellation.
+                progressBar.Value = 0;
+                lblCurrentActionValue.Text = "...";
+                lblOutputPathValue.Text = "...";
+                lblCurrentFile.Text = "...";
+                btnPauseResume.Text = "Pause";
+            }
         }
 
         // Event handler for the "Add Files" button
         private void btnAddFiles_Click(object sender, EventArgs e)
         {
-            if (fileListView.Items.Count > 0)
-            {
-                foreach (ListViewItem Item in fileListView.Items)
-                {
-                    fileListView.Items.Remove(Item);
-                }
-            }
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Title = "Select Files to Add";
@@ -101,7 +117,42 @@ namespace FCP
         }
 
 
-        // Event handler for the "Remove Selected" button
+        private void btnOpenArchive_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Open Archive";
+                dialog.Filter = "FCP Archive (*.fcp)|*.fcp";
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        var reader = new ArchiveReader();
+                        List<ArchiveEntry> entries = reader.ReadArchiveEntries(dialog.FileName);
+
+                        // Clear the list before showing the archive contents
+                        fileListView.Items.Clear();
+
+                        foreach (var entry in entries)
+                        {
+                            ListViewItem item = new ListViewItem(Path.GetFileName(entry.RelativePath));
+                            item.SubItems.Add(FilesFoldersHelper.FormatBytes(entry.OriginalSize));
+                            item.SubItems.Add(entry.RelativePath);
+                            item.Tag = entry;
+                            fileListView.Items.Add(item);
+                        }
+                        // Set the application to "archive mode"
+                        _currentOpenArchivePath = dialog.FileName;
+                        SetUIState(false, isArchiveOpen: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to open archive: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
         private void btnRemoveSelected_Click(object sender, EventArgs e)
         {
             // Check if there are any selected items to avoid errors.
@@ -120,19 +171,17 @@ namespace FCP
                 MessageBox.Show("Please select one or more files to remove.", "No Files Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
         // Event handler for the "Remove All" button
-        private void btnRemoveAll_Click(object sender, EventArgs e)
+        private void btnReset_Click(object sender, EventArgs e)
         {
+            SetUIState(false, false);
             if (fileListView.Items.Count > 0)
             {
                 foreach (ListViewItem Item in fileListView.Items)
                 {
                     fileListView.Items.Remove(Item);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Please add one or more files to remove.", "No Files Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -169,7 +218,9 @@ namespace FCP
                     : new ShannonFanoAlgorithm();
 
                 var writer = new ArchiveWriter(algorithm);
+
                 _cancellationTokenSource = new CancellationTokenSource();
+                _pauseEvent = new ManualResetEventSlim(true);
 
                 Progress<ProgressInfo> progress = new Progress<ProgressInfo>(report =>
                 {
@@ -181,126 +232,146 @@ namespace FCP
                 lblCurrentActionValue.Text = "Compressing...";
 
                 _pauseEvent.Set();
-                isPaused = false;
                 btnPauseResume.Text = "Pause";
-
+                _currentOperation = "Compressing";
                 try
                 {
-                    await Task.Run(
-                        () => writer.CreateArchive(
-                            filesToArchive,
-                            outputArchivePath,
-                            progress,
-                            _cancellationTokenSource.Token,
-                            _pauseEvent),
-                        _cancellationTokenSource.Token
-                    );
 
-                    
+                    await Task.Run(() => writer.CreateArchive(filesToArchive, outputArchivePath, progress, _cancellationTokenSource.Token, _pauseEvent));
+
                     if (_cancellationTokenSource.IsCancellationRequested)
                     {
-                        lblCurrentActionValue.Text = "Operation was canceled.";
+                        lblCurrentActionValue.Text = "Operation was cancelled.";
                         if (File.Exists(outputArchivePath)) File.Delete(outputArchivePath);
-
-                        MessageBox.Show(
-                            "The compression operation was canceled successfully.",
-                            "Operation Canceled",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information
-                        );
-
-                        return;
                     }
+                    else
+                    {
+                        byte[] archiveBytes = File.ReadAllBytes(outputArchivePath);
 
-                   
-                    byte[] archiveBytes = File.ReadAllBytes(outputArchivePath);
+                        EncryptionHelper.HandleEncryptionAndWriteFile(
+                            archiveBytes,
+                            txtPassword.Text,
+                            chkPassword.Checked,
+                            outputArchivePath
+                        );
+                        lblCurrentActionValue.Text = "Completed!";
+                        lblOutputPathValue.Text = outputArchivePath;
 
-                    EncryptionHelper.HandleEncryptionAndWriteFile(
-                        archiveBytes,
-                        txtPassword.Text,
-                        chkPassword.Checked,
-                        outputArchivePath
-                    );
+                        // Calculate and display compression ratio
+                        long originalSize = filesToArchive.Keys.Sum(path => new FileInfo(path).Length);
+                        long compressedSize = new FileInfo(outputArchivePath).Length;
+                        double ratio = (double)compressedSize / originalSize;
+                        lblCompressionRatioValue.Text = $"{ratio:P2}"; // Format as percentage
 
-                   
-                    long originalSize = filesToArchive.Keys.Sum(path => new FileInfo(path).Length);
-                    long compressedSize = new FileInfo(outputArchivePath).Length;
-                    double ratio = (double)compressedSize / originalSize;
-                    lblCompressionRatioValue.Text = $"{ratio:P2}";
+                        MessageBox.Show("Compression completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    lblCurrentActionValue.Text = "Completed!";
-                    lblOutputPathValue.Text = outputArchivePath;
-
-                    MessageBox.Show(
-                        "Compression completed successfully!",
-                        "Success",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information
-                    );
-
-                    lblCurrentFile.Text = "...";
-                    lblCurrentActionValue.Text = "...";
+                        fileListView.Items.Clear();
+                        lblCompressionRatioValue.Text = "...";
+                        lblOutputPathValue.Text = "...";
+                        lblCurrentFile.Text = "...";
+                        lblCurrentActionValue.Text = "...";
+                    }
                 }
                 catch (OperationCanceledException)
                 {
-                    lblCurrentActionValue.Text = "Operation was canceled.";
+                    lblCurrentActionValue.Text = "Operation was cancelled.";
                     if (File.Exists(outputArchivePath)) File.Delete(outputArchivePath);
-
-                    var result = MessageBox.Show(
-                        "The compression operation was canceled successfully.",
-                        "Operation Canceled",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information
-                    );
-
-                    if (result == DialogResult.OK)
-                    {
-                        this.Close();
-                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(
-                        $"An error occurred during compression: {ex.Message}",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
+                    //lblStatus.Text = "Error";
+                    MessageBox.Show($"An error occurred during compression: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {
-                    _pauseEvent.Set();
-                    isPaused = false;
-                    btnPauseResume.Text = "Pause";
-
+                    // 5. Reset UI state
                     SetUIState(false);
-                    _cancellationTokenSource?.Dispose();
+                    _cancellationTokenSource.Dispose();
+                    _pauseEvent.Dispose();
                 }
             }
         }
-        // **NEW METHOD**
-        private void btnOpenArchive_Click(object sender, EventArgs e)
+
+
+        private async void btnDecompressSelected_Click(object sender, EventArgs e)
         {
-            using (var dialog = new OpenFileDialog())
+            if (string.IsNullOrEmpty(_currentOpenArchivePath))
             {
-                dialog.Title = "Open Archive";
-                dialog.Filter = "FCP Archive (*.fcp)|*.fcp";
-                if (dialog.ShowDialog() == DialogResult.OK)
+                MessageBox.Show("This function can only be used after opening an archive.", "Invalid Operation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (fileListView.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Please select one or more files to decompress.", "No Files Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+
+            var entriesToExtract = new List<ArchiveEntry>();
+            foreach (ListViewItem item in fileListView.SelectedItems)
+            {
+                if (item.Tag is ArchiveEntry entry)
                 {
-                    try
-                    {
-                        var reader = new ArchiveReader();
-                        List<ArchiveEntry> entries = reader.ReadArchiveEntries(dialog.FileName);
+                    entriesToExtract.Add(entry);
+                }
+            }
 
-                        // Clear the list before showing the archive contents
-                        fileListView.Items.Clear();
+            if (entriesToExtract.Count == 0) return;
 
+            string destinationDirectory;
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Select destination folder for extraction";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                destinationDirectory = dialog.SelectedPath;
+            }
 
+            var reader = new ArchiveReader();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _pauseEvent = new ManualResetEventSlim(true);
+            var progress = new Progress<ProgressInfo>(report =>
+            {
+                progressBar.Value = report.Percentage;
+                lblCurrentFile.Text = report.CurrentFile;
+            });
 
+            SetUIState(true, isArchiveOpen: true);
+            lblCurrentActionValue.Text = "Decompressing...";
 
+            try
+            {
+                _currentOperation = "Decompressing";
+                await Task.Run(() => reader.ExtractSelectedEntries(_currentOpenArchivePath, entriesToExtract, destinationDirectory,
+                                                                   progress, _cancellationTokenSource.Token, _pauseEvent));
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    lblCurrentActionValue.Text = "Decompressing was cancelled.";
+                }
+                else
+                {
+                    lblCurrentActionValue.Text = "Decompressing Completed!";
+                    lblOutputPathValue.Text = destinationDirectory;
+                    MessageBox.Show("Decompressing of selected files completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+            }
+            catch (OperationCanceledException)
+            {
+                lblCurrentActionValue.Text = "Decompressing was cancelled.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during Decompressing: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                SetUIState(false);
+            }
+        }
 
         // Event handler for the "Extract" button
-        private async void btnExtract_Click(object sender, EventArgs e)
+        private async void btnDecompress_Click(object sender, EventArgs e)
         {
             string sourceArchivePath;
             using (var dialog = new OpenFileDialog())
@@ -321,119 +392,77 @@ namespace FCP
 
             var reader = new ArchiveReader();
             _cancellationTokenSource = new CancellationTokenSource();
-
+            _pauseEvent = new ManualResetEventSlim(true);
             var progress = new Progress<ProgressInfo>(report =>
             {
                 progressBar.Value = report.Percentage;
-                lblCurrentActionValue.Text = report.CurrentFile;
+                lblCurrentFile.Text = report.CurrentFile;
             });
 
             SetUIState(true);
-            lblCurrentActionValue.Text = "Preparing to extract...";
+            lblCurrentActionValue.Text = "Decompressing...";
 
             try
             {
-                
+                _currentOperation = "Decompressing";
                 byte[] actualData = DecryptionHelper.HandleDecryptionIfNeeded(sourceArchivePath);
 
                 string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".fcp");
                 File.WriteAllBytes(tempPath, actualData);
 
-                lblCurrentActionValue.Text = "Decompressing...";
-                await Task.Run(
-                    () => reader.ExtractArchive(
-                        tempPath,
-                        destinationDirectory,
-                        progress,
-                        _cancellationTokenSource.Token,
-                        _pauseEvent),
-                    _cancellationTokenSource.Token
-                );
+                await Task.Run(() => reader.ExtractArchive(tempPath, destinationDirectory,
+                                                          progress, _cancellationTokenSource.Token, _pauseEvent));
 
-                File.Delete(tempPath);
+                
 
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
-                    lblCurrentActionValue.Text = "Extraction was cancelled.";
-                    MessageBox.Show(
-                        "The extraction operation was canceled successfully.",
-                        "Operation Canceled",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information
-                    );
-                    return;
+                    lblCurrentActionValue.Text = "Decompressing was cancelled.";
                 }
-
-                lblCurrentActionValue.Text = "Extraction Completed!";
-                lblOutputPathValue.Text = destinationDirectory;
-
-                MessageBox.Show(
-                    "Extraction completed successfully!",
-                    "Success",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
+                else
+                {
+                    lblCurrentActionValue.Text = "Completed!";
+                    lblOutputPathValue.Text = destinationDirectory;
+                    MessageBox.Show("Decompressing completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                File.Delete(tempPath);
             }
             catch (OperationCanceledException)
             {
-                lblCurrentActionValue.Text = "Extraction was canceled.";
-
-                var result = MessageBox.Show(
-                    "The extraction operation was canceled successfully.",
-                    "Operation Canceled",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
-
-                if (result == DialogResult.OK)
-                {
-                    this.Close();
-                }
+                lblCurrentActionValue.Text = "Decompressing was cancelled.";
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"An error occurred during extraction: {ex.Message}",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                MessageBox.Show($"An error occurred during Decompressing: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 SetUIState(false);
-                _cancellationTokenSource.Dispose();
             }
         }
 
-
-
-
-
-        // Event handler for the "Cancel" button in the status panel
         private void btnCancel_Click(object sender, EventArgs e)
         {
             _cancellationTokenSource?.Cancel();
+            MessageBox.Show("The Operation was canceled.", "Canceled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
         }
 
-        // Event handler for the combined Pause/Resume button
         private void btnPauseResume_Click(object sender, EventArgs e)
         {
-            isPaused = !isPaused;
-            btnPauseResume.Text = isPaused ? "Resume" : "Pause";
-
-            if (isPaused)
+            if (_pauseEvent.IsSet)
             {
-                _pauseEvent.Reset(); // إيقاف العملية
-                lblCurrentActionValue.Text = "Paused...";
+                _pauseEvent.Reset();
+                btnPauseResume.Text = "Resume";
+                lblCurrentActionValue.Text = _currentOperation + " Paused";
             }
             else
             {
-                _pauseEvent.Set(); // متابعة العملية
-                lblCurrentActionValue.Text = "Resuming...";
+                _pauseEvent.Set();
+                btnPauseResume.Text = "Pause";
+                lblCurrentActionValue.Text = _currentOperation + " Resumed";
             }
         }
-
         // Event handler for when the "Encrypt with Password" checkbox is changed
         private void chkPassword_CheckedChanged(object sender, EventArgs e)
         {
@@ -443,23 +472,6 @@ namespace FCP
 
 
 
-
-        private void SetUIState(bool isProcessing)
-        {
-            // Disable/enable controls based on whether an operation is running.
-            mainToolStrip.Enabled = !isProcessing;
-            groupBoxOptions.Enabled = !isProcessing;
-            btnPauseResume.Enabled = isProcessing;
-            btnCancel.Enabled = isProcessing;
-
-            if (!isProcessing)
-            {
-                // Reset UI elements after completion or cancellation.
-                progressBar.Value = 0;
-                lblCurrentActionValue.Text = "...";
-                btnPauseResume.Text = "Pause";
-            }
-        }
 
     }
 }

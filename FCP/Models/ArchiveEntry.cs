@@ -16,5 +16,8 @@ namespace FCP.Models
 
         // The size of the compressed data block in the archive, in bytes.
         public long CompressedSize { get; set; }
+
+        // The starting position of this entry's compressed data within the archive stream.
+        public long DataOffset { get; set; }
     }
 }

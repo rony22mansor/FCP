@@ -37,10 +37,11 @@ namespace FCP
             this.btnOpenArchive = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnRemoveSelected = new System.Windows.Forms.ToolStripButton();
-            this.btnRemoveAll = new System.Windows.Forms.ToolStripButton();
+            this.btnReset = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnCompress = new System.Windows.Forms.ToolStripButton();
-            this.btnExtract = new System.Windows.Forms.ToolStripButton();
+            this.btnDecompress = new System.Windows.Forms.ToolStripButton();
+            this.btnDecompressSelected = new System.Windows.Forms.ToolStripButton();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupProcessStatus = new System.Windows.Forms.GroupBox();
@@ -89,114 +90,165 @@ namespace FCP
             this.btnOpenArchive,
             this.toolStripSeparator1,
             this.btnRemoveSelected,
-            this.btnRemoveAll,
+            this.btnReset,
             this.toolStripSeparator2,
             this.btnCompress,
-            this.btnExtract});
+            this.btnDecompress,
+            this.btnDecompressSelected});
             this.mainToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
             this.mainToolStrip.Name = "mainToolStrip";
+            this.mainToolStrip.Padding = new System.Windows.Forms.Padding(0, 5, 1, 5);
             this.mainToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.mainToolStrip.Size = new System.Drawing.Size(1045, 59);
+            this.mainToolStrip.Size = new System.Drawing.Size(1045, 80);
             this.mainToolStrip.Stretch = true;
             this.mainToolStrip.TabIndex = 1;
             this.mainToolStrip.Text = "toolStrip1";
             // 
             // btnAddFiles
             // 
+            this.btnAddFiles.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddFiles.Image = global::FCP.Properties.Resources.add_file;
+            this.btnAddFiles.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddFiles.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAddFiles.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnAddFiles.Name = "btnAddFiles";
-            this.btnAddFiles.Size = new System.Drawing.Size(74, 56);
-            this.btnAddFiles.Text = "Add Files";
+            this.btnAddFiles.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnAddFiles.Size = new System.Drawing.Size(43, 70);
+            this.btnAddFiles.Text = "Add\nFiles";
+            this.btnAddFiles.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddFiles.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
             // 
             // btnAddFolder
             // 
+            this.btnAddFolder.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddFolder.Image = global::FCP.Properties.Resources.add_folder;
+            this.btnAddFolder.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddFolder.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAddFolder.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
+            this.btnAddFolder.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnAddFolder.Name = "btnAddFolder";
-            this.btnAddFolder.Size = new System.Drawing.Size(87, 56);
-            this.btnAddFolder.Text = "Add Folder";
+            this.btnAddFolder.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnAddFolder.Size = new System.Drawing.Size(55, 70);
+            this.btnAddFolder.Text = "Add\nFolder";
+            this.btnAddFolder.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddFolder.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnAddFolder.Click += new System.EventHandler(this.btnAddFolder_Click);
             // 
             // btnOpenArchive
             // 
+            this.btnOpenArchive.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnOpenArchive.Image = global::FCP.Properties.Resources.extract;
+            this.btnOpenArchive.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOpenArchive.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnOpenArchive.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnOpenArchive.Name = "btnOpenArchive";
-            this.btnOpenArchive.Size = new System.Drawing.Size(103, 24);
-            this.btnOpenArchive.Text = "Open Archive";
+            this.btnOpenArchive.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnOpenArchive.Size = new System.Drawing.Size(60, 70);
+            this.btnOpenArchive.Text = "Open\nArchive";
+            this.btnOpenArchive.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnOpenArchive.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnOpenArchive.Click += new System.EventHandler(this.btnOpenArchive_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
+            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 59);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 70);
             // 
             // btnRemoveSelected
             // 
+            this.btnRemoveSelected.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRemoveSelected.Image = global::FCP.Properties.Resources.remove_selected;
+            this.btnRemoveSelected.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnRemoveSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRemoveSelected.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnRemoveSelected.Name = "btnRemoveSelected";
-            this.btnRemoveSelected.Size = new System.Drawing.Size(128, 56);
-            this.btnRemoveSelected.Text = "Remove Selected";
+            this.btnRemoveSelected.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnRemoveSelected.Size = new System.Drawing.Size(67, 70);
+            this.btnRemoveSelected.Text = "Remove\nSelected";
+            this.btnRemoveSelected.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnRemoveSelected.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnRemoveSelected.Click += new System.EventHandler(this.btnRemoveSelected_Click);
             // 
-            // btnRemoveAll
+            // btnReset
             // 
-            this.btnRemoveAll.Image = global::FCP.Properties.Resources.reset;
-            this.btnRemoveAll.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRemoveAll.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
-            this.btnRemoveAll.Name = "btnRemoveAll";
-            this.btnRemoveAll.Size = new System.Drawing.Size(49, 56);
-            this.btnRemoveAll.Text = "Reset";
-            this.btnRemoveAll.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnRemoveAll.Click += new System.EventHandler(this.btnRemoveAll_Click);
+            this.btnReset.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReset.Image = global::FCP.Properties.Resources.reset;
+            this.btnReset.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnReset.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnReset.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnReset.Size = new System.Drawing.Size(50, 70);
+            this.btnReset.Text = "Reset";
+            this.btnReset.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnReset.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(16, 0, 16, 0);
+            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 59);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 70);
             // 
             // btnCompress
             // 
+            this.btnCompress.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCompress.Image = global::FCP.Properties.Resources.compress;
+            this.btnCompress.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnCompress.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnCompress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnCompress.Name = "btnCompress";
-            this.btnCompress.Size = new System.Drawing.Size(78, 56);
+            this.btnCompress.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnCompress.Size = new System.Drawing.Size(77, 70);
             this.btnCompress.Text = "Compress";
+            this.btnCompress.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnCompress.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnCompress.Click += new System.EventHandler(this.btnCompress_Click);
             // 
-            // btnExtract
+            // btnDecompress
             // 
-            this.btnExtract.Image = global::FCP.Properties.Resources.extract;
-            this.btnExtract.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnExtract.Margin = new System.Windows.Forms.Padding(6, 1, 0, 2);
-            this.btnExtract.Name = "btnExtract";
-            this.btnExtract.Size = new System.Drawing.Size(95, 56);
-            this.btnExtract.Text = "Decompress";
-            this.btnExtract.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnExtract.Click += new System.EventHandler(this.btnExtract_Click);
+            this.btnDecompress.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDecompress.Image = global::FCP.Properties.Resources.extract;
+            this.btnDecompress.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnDecompress.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDecompress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnDecompress.Name = "btnDecompress";
+            this.btnDecompress.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnDecompress.Size = new System.Drawing.Size(91, 70);
+            this.btnDecompress.Text = "Decompress";
+            this.btnDecompress.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnDecompress.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnDecompress.Click += new System.EventHandler(this.btnDecompress_Click);
+            // 
+            // btnExtractSelected
+            // 
+            this.btnDecompressSelected.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDecompressSelected.Image = global::FCP.Properties.Resources.extract;
+            this.btnDecompressSelected.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnDecompressSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDecompressSelected.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnDecompressSelected.Name = "btnDecompressSelected";
+            this.btnDecompressSelected.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnDecompressSelected.Size = new System.Drawing.Size(91, 70);
+            this.btnDecompressSelected.Text = "Decompress\nSelected";
+            this.btnDecompressSelected.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnDecompressSelected.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnDecompressSelected.ToolTipText = "Decompress\r\nSelected";
+            this.btnDecompressSelected.Click += new System.EventHandler(this.btnDecompressSelected_Click);
             // 
             // mainPanel
             // 
             this.mainPanel.Controls.Add(this.tableLayoutPanel1);
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(0, 59);
+            this.mainPanel.Location = new System.Drawing.Point(0, 80);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(4);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.mainPanel.Size = new System.Drawing.Size(1045, 659);
+            this.mainPanel.Size = new System.Drawing.Size(1045, 638);
             this.mainPanel.TabIndex = 3;
             // 
             // tableLayoutPanel1
@@ -325,6 +377,7 @@ namespace FCP
             this.btnPauseResume.TabIndex = 2;
             this.btnPauseResume.Text = "Pause";
             this.btnPauseResume.UseVisualStyleBackColor = true;
+            this.btnPauseResume.Click += new System.EventHandler(this.btnPauseResume_Click);
             // 
             // btnCancel
             // 
@@ -341,7 +394,7 @@ namespace FCP
             // 
             // progressBar
             // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.progressBar.Location = new System.Drawing.Point(8, 53);
             this.progressBar.Margin = new System.Windows.Forms.Padding(4);
@@ -539,11 +592,12 @@ namespace FCP
         private System.Windows.Forms.ToolStripButton btnAddFiles;
         private System.Windows.Forms.ToolStripButton btnAddFolder;
         private System.Windows.Forms.ToolStripButton btnRemoveSelected;
-        private System.Windows.Forms.ToolStripButton btnRemoveAll;
+        private System.Windows.Forms.ToolStripButton btnReset;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton btnCompress;
-        private System.Windows.Forms.ToolStripButton btnExtract;
+        private System.Windows.Forms.ToolStripButton btnDecompress;
+        private System.Windows.Forms.ToolStripButton btnDecompressSelected;
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox groupProcessStatus;
