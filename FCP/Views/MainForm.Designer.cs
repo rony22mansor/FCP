@@ -68,8 +68,6 @@ namespace FCP
             this.colFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.mainMenu = new System.Windows.Forms.MenuStrip();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.registerShellIntegrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unregisterShellIntegrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainToolStrip.SuspendLayout();
@@ -80,7 +78,6 @@ namespace FCP
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainToolStrip
@@ -559,38 +556,15 @@ namespace FCP
             this.colPath.Text = "Path";
             this.colPath.Width = 635;
             // 
-            // mainMenu
-            // 
-            this.mainMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolsToolStripMenuItem});
-            this.mainMenu.Location = new System.Drawing.Point(0, 0);
-            this.mainMenu.Name = "mainMenu";
-            this.mainMenu.Size = new System.Drawing.Size(200, 24);
-            this.mainMenu.TabIndex = 0;
-            // 
-            // toolsToolStripMenuItem
-            // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.registerShellIntegrationToolStripMenuItem,
-            this.unregisterShellIntegrationToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.toolsToolStripMenuItem.Text = "&Tools";
-            // 
             // registerShellIntegrationToolStripMenuItem
             // 
             this.registerShellIntegrationToolStripMenuItem.Name = "registerShellIntegrationToolStripMenuItem";
-            this.registerShellIntegrationToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.registerShellIntegrationToolStripMenuItem.Text = "Register Shell Integration";
-            this.registerShellIntegrationToolStripMenuItem.Click += new System.EventHandler(this.registerShellIntegrationToolStripMenuItem_Click);
+            this.registerShellIntegrationToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // unregisterShellIntegrationToolStripMenuItem
             // 
             this.unregisterShellIntegrationToolStripMenuItem.Name = "unregisterShellIntegrationToolStripMenuItem";
-            this.unregisterShellIntegrationToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.unregisterShellIntegrationToolStripMenuItem.Text = "Unregister Shell Integration";
-            this.unregisterShellIntegrationToolStripMenuItem.Click += new System.EventHandler(this.unregisterShellIntegrationToolStripMenuItem_Click);
+            this.unregisterShellIntegrationToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // MainForm
             // 
@@ -600,8 +574,6 @@ namespace FCP
             this.ClientSize = new System.Drawing.Size(1045, 718);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.mainToolStrip);
-            this.Controls.Add(this.mainMenu);
-            this.MainMenuStrip = this.mainMenu;
             this.DoubleBuffered = true;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
@@ -611,8 +583,6 @@ namespace FCP
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "C# Multimedia Compressor";
-            this.mainMenu.ResumeLayout(false);
-            this.mainMenu.PerformLayout();
             this.mainToolStrip.ResumeLayout(false);
             this.mainToolStrip.PerformLayout();
             this.mainPanel.ResumeLayout(false);
@@ -625,8 +595,6 @@ namespace FCP
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.mainMenu.ResumeLayout(false);
-            this.mainMenu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -671,10 +639,6 @@ namespace FCP
         private System.Windows.Forms.Label lblCurrentFile;
         private System.Windows.Forms.ToolStripButton btnOpenArchive;
 
-
-        private System.Windows.Forms.MenuStrip mainMenu;
-
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem registerShellIntegrationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unregisterShellIntegrationToolStripMenuItem;
 

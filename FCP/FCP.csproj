@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,7 +53,6 @@
     <Compile Include="Controllers\HuffmanAlgorithm.cs" />
     <Compile Include="Controllers\ShannonFanoAlgorithm.cs" />
     <Compile Include="Helpers\FilesFoldersHelper.cs" />
-    <Compile Include="Helpers\ShellIntegration.cs" />
     <Compile Include="Models\ArchiveEntry.cs" />
     <Compile Include="Models\CompressInterface.cs" />
     <Compile Include="Models\Node.cs" />

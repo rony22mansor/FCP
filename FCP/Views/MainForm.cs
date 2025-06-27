@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 
 // This is the main code-behind file for your form.
 // All the logic for button clicks and other events will go here.
@@ -27,95 +27,6 @@ namespace FCP
             InitializeComponent();
             // Initially hide the password text box
             txtPassword.Visible = false;
-        }
-
-        public MainForm(string[] args)
-        {
-            InitializeComponent();
-            InitializeForm();
-            HandleCommandLineArgs(args);
-        }
-
-        private void InitializeForm()
-        {
-            txtPassword.Visible = false;
-        }
-
-        // **NEW METHOD**: Processes paths passed from the command line.
-        private void HandleCommandLineArgs(string[] args)
-        {
-            if (args == null || args.Length == 0) return;
-
-            string path = args[0];
-
-            if (File.Exists(path))
-            {
-                if (Path.GetExtension(path).Equals(".fcp", StringComparison.OrdinalIgnoreCase))
-                {
-                    // If it's an archive, open it.
-                    OpenAndListArchive(path);
-                }
-                else
-                {
-                    // If it's a regular file, add it for compression.
-                    AddSingleFileToList(path);
-                }
-            }
-            else if (Directory.Exists(path))
-            {
-                // If it's a folder, add its contents for compression.
-                FilesFoldersHelper.AddAllFilesFromFolder(path, path, fileListView);
-            }
-        }
-
-        // --- Event Handlers for New Menu Items ---
-
-        private void registerShellIntegrationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ShellIntegration.Register();
-        }
-
-        private void unregisterShellIntegrationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ShellIntegration.Unregister();
-        }
-
-        // --- Refactored Helper Methods ---
-
-        private void OpenAndListArchive(string archivePath)
-        {
-            try
-            {
-                var reader = new ArchiveReader();
-                List<ArchiveEntry> entries = reader.ReadArchiveEntries(archivePath);
-                fileListView.Items.Clear();
-                foreach (var entry in entries)
-                {
-                    ListViewItem item = new ListViewItem(Path.GetFileName(entry.RelativePath));
-                    item.SubItems.Add(FilesFoldersHelper.FormatBytes(entry.OriginalSize));
-                    item.SubItems.Add(entry.RelativePath);
-                    item.Tag = entry;
-                    fileListView.Items.Add(item);
-                }
-                _currentOpenArchivePath = archivePath;
-                SetUIState(false, isArchiveOpen: true);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to open archive: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void AddSingleFileToList(string filePath)
-        {
-            _currentOpenArchivePath = null;
-            SetUIState(false, isArchiveOpen: false);
-            FileInfo fileInfo = new FileInfo(filePath);
-            ListViewItem item = new ListViewItem(fileInfo.Name);
-            item.SubItems.Add(FilesFoldersHelper.FormatBytes(fileInfo.Length));
-            item.SubItems.Add(fileInfo.Name);
-            item.Tag = fileInfo.FullName;
-            fileListView.Items.Add(item);
         }
 
 
@@ -526,6 +437,5 @@ namespace FCP
                 btnPauseResume.Text = "Pause";
             }
         }
-
     }
 }
