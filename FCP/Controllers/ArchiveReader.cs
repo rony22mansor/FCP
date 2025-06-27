@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace FCP.Controllers
 {
@@ -26,7 +23,7 @@ namespace FCP.Controllers
             {
                 // Read and validate magic number
                 string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
-                if (magic != "FCP_ARCH")
+                if (magic != Constants.OurSignature)
                 {
                     throw new InvalidDataException("The selected file is not a valid FCP archive.");
                 }
@@ -47,7 +44,8 @@ namespace FCP.Controllers
                     {
                         RelativePath = relativePath,
                         OriginalSize = originalSize,
-                        CompressedSize = compressedSize
+                        CompressedSize = compressedSize,
+                        DataOffset = reader.BaseStream.Position
                     });
 
                     // Skip the compressed data block to get to the next header
@@ -57,37 +55,66 @@ namespace FCP.Controllers
             return entries;
         }
 
+        public void ExtractSelectedEntries(string sourceArchivePath, List<ArchiveEntry> entriesToExtract, string destinationDirectory,
+                                           IProgress<ProgressInfo> progress, CancellationToken token, ManualResetEventSlim pauseEvent)
+        {
+            using (FileStream archiveStream = new FileStream(sourceArchivePath, FileMode.Open))
+            using (BinaryReader reader = new BinaryReader(archiveStream))
+            {
+                string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
+                if (magic != "FCP_ARCH") throw new InvalidDataException("Invalid archive file.");
+
+                char algoIdentifier = reader.ReadChar();
+                CompressInterface selectedAlgorithm = algoIdentifier == 'H' ? _huffman : _shannonFano;
+
+                int filesProcessed = 0;
+                foreach (var entry in entriesToExtract)
+                {
+                    pauseEvent.Wait(token);
+                    token.ThrowIfCancellationRequested();
+                    filesProcessed++;
+
+                    var report = new ProgressInfo
+                    {
+                        Percentage = (filesProcessed * 100) / entriesToExtract.Count,
+                        CurrentFile = $"{Path.GetFileName(entry.RelativePath)} ...Working!"
+                    };
+                    progress.Report(report);
+
+                    reader.BaseStream.Seek(entry.DataOffset, SeekOrigin.Begin);
+
+                    byte[] compressedData = reader.ReadBytes((int)entry.CompressedSize);
+                    byte[] decompressedData = selectedAlgorithm.Decompress(compressedData, token, pauseEvent);
+
+                    // **THE FIX IS HERE**
+                    string relativePath = entry.RelativePath;
+                    if (Path.IsPathRooted(relativePath))
+                    {
+                        relativePath = Path.GetFileName(relativePath);
+                    }
+
+                    string destinationFilePath = Path.Combine(destinationDirectory, relativePath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
+                    File.WriteAllBytes(destinationFilePath, decompressedData);
+                }
+            }
+        }
+
         /// <summary>
         /// Extracts all files from an archive to a specified destination directory.
         /// </summary>
         public void ExtractArchive(string sourceArchivePath, string destinationDirectory,
-                                   IProgress<ProgressInfo> progress)
+                                   IProgress<ProgressInfo> progress, CancellationToken token, ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(sourceArchivePath, FileMode.Open))
             using (BinaryReader reader = new BinaryReader(archiveStream))
             {
                 // --- Read Main Archive Header ---
                 string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
-                if (magic != "FCP_ARCH")
-                {
-                    throw new InvalidDataException("The selected file is not a valid FCP archive.");
-                }
+                if (magic != Constants.OurSignature) throw new InvalidDataException("Invalid archive file.");
 
                 char algoIdentifier = reader.ReadChar();
-                CompressInterface selectedAlgorithm;
-
-                if (algoIdentifier == 'H')
-                {
-                    selectedAlgorithm = _huffman;
-                }
-                else if (algoIdentifier == 'S')
-                {
-                    selectedAlgorithm = _shannonFano;
-                }
-                else
-                {
-                    throw new InvalidDataException("Archive contains an unknown compression algorithm identifier.");
-                }
+                CompressInterface selectedAlgorithm = algoIdentifier == Constants.HuffmanAlgorithmCode ? _huffman : _shannonFano;
 
                 int totalFiles = reader.ReadInt32();
                 int filesProcessed = 0;
@@ -95,7 +122,6 @@ namespace FCP.Controllers
                 // --- Read File Entries ---
                 for (int i = 0; i < totalFiles; i++)
                 {
-
                     string relativePath = reader.ReadString();
                     long originalSize = reader.ReadInt64();
                     long compressedSize = reader.ReadInt64();
@@ -104,12 +130,13 @@ namespace FCP.Controllers
                     var report = new ProgressInfo
                     {
                         Percentage = (filesProcessed * 100) / totalFiles,
-                        CurrentFile = $"Extracting: {Path.GetFileName(relativePath)}"
+                        CurrentFile = $"{Path.GetFileName(relativePath)} ...Working!"
                     };
                     progress.Report(report);
 
+
                     byte[] compressedData = reader.ReadBytes((int)compressedSize);
-                    byte[] decompressedData = selectedAlgorithm.Decompress(compressedData);
+                    byte[] decompressedData = selectedAlgorithm.Decompress(compressedData, token, pauseEvent);
 
                     // **THE FIX IS HERE: Defensively handle improperly stored absolute paths.**
                     // If the path stored in the archive is absolute, this prevents writing files
@@ -126,6 +153,7 @@ namespace FCP.Controllers
                     Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
 
                     File.WriteAllBytes(destinationFilePath, decompressedData);
+
                 }
             }
         }

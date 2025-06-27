@@ -27,7 +27,7 @@ namespace FCP.Controllers
         /// <param name="outputArchivePath">The path where the final archive file will be saved.</param>
         /// <param name="progress">An object to report progress back to the UI.</param>
         public void CreateArchive(Dictionary<string, string> filesToArchive, string outputArchivePath,
-                                  IProgress<ProgressInfo> progress)
+                                  IProgress<ProgressInfo> progress, CancellationToken token, ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(outputArchivePath, FileMode.Create))
             using (BinaryWriter writer = new BinaryWriter(archiveStream))
@@ -57,12 +57,12 @@ namespace FCP.Controllers
                     var report = new ProgressInfo
                     {
                         Percentage = (filesProcessed * 100) / totalFiles,
-                        CurrentFile = $"{Path.GetFileName(sourcePath)} ...Done!"
+                        CurrentFile = $"{Path.GetFileName(sourcePath)} ...Working!"
                     };
                     progress.Report(report);
 
                     byte[] originalData = File.ReadAllBytes(sourcePath);
-                    byte[] compressedData = _algorithm.Compress(originalData);
+                    byte[] compressedData = _algorithm.Compress(originalData, token, pauseEvent);
 
                     if (compressedData == null) continue;
 
@@ -72,7 +72,7 @@ namespace FCP.Controllers
                         OriginalSize = originalData.Length,
                         CompressedSize = compressedData.Length
                     };
-                   
+
                     WriteEntry(writer, entry, compressedData);
                 }
             }

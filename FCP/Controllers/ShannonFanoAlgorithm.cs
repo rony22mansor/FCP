@@ -1,11 +1,10 @@
 ﻿using FCP.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
 
 namespace FCP.Controllers
 {
@@ -15,7 +14,7 @@ namespace FCP.Controllers
     public class ShannonFanoAlgorithm : CompressInterface
     {
         // The main public method for compression.
-        public byte[] Compress(byte[] data)
+        public byte[] Compress(byte[] data, CancellationToken token, ManualResetEventSlim pauseEvent)
         {
             var frequencies = BuildFrequencyTable(data);
             if (frequencies.Count <= 1) return null;
@@ -23,8 +22,15 @@ namespace FCP.Controllers
             var encodingMap = BuildEncodingMap(frequencies);
 
             var encodedBitString = new StringBuilder();
+            int bytesProcessed = 0;
+            const int checkInterval = 4096;
             foreach (byte b in data)
             {
+                if (++bytesProcessed % checkInterval == 0)
+                {
+                    pauseEvent.Wait(token);
+                    token.ThrowIfCancellationRequested();
+                }
                 encodedBitString.Append(encodingMap[b]);
             }
 
@@ -51,7 +57,7 @@ namespace FCP.Controllers
         }
 
         // The main public method for decompression.
-        public byte[] Decompress(byte[] compressedData)
+        public byte[] Decompress(byte[] compressedData, CancellationToken token, ManualResetEventSlim pauseEvent)
         {
             using (var memoryStream = new MemoryStream(compressedData))
             using (var reader = new BinaryReader(memoryStream, Encoding.UTF8, true))
@@ -82,15 +88,22 @@ namespace FCP.Controllers
                 {
                     fullBitString.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
                 }
-
+                const int checkInterval = 8192;
                 // Take only the bits from the original data, ignoring the padding.
                 string relevantBits = fullBitString.ToString().Substring(0, originalBitCount);
 
                 // 4. Decode the data by matching bit sequences to the decoding map.
                 var currentCode = new StringBuilder();
-                foreach (char bit in relevantBits)
+                for (int i = 0; i < relevantBits.Length; i++)
                 {
-                    currentCode.Append(bit);
+                    // **Check for pause/cancel signals periodically.**
+                    if (i % checkInterval == 0)
+                    {
+                        pauseEvent.Wait(token);
+                        token.ThrowIfCancellationRequested();
+                    }
+
+                    currentCode.Append(relevantBits[i]);
                     if (decodingMap.ContainsKey(currentCode.ToString()))
                     {
                         decompressedBytes.Add(decodingMap[currentCode.ToString()]);

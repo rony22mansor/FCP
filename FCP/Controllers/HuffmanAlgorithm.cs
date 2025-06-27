@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using FCP.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using FCP.Models;
+using System.Threading;
 
 namespace FCP.Controllers
 {
@@ -16,7 +16,7 @@ namespace FCP.Controllers
         /// <summary>
         /// Compresses a byte array using the Huffman algorithm.
         /// </summary>
-        public byte[] Compress(byte[] data)
+        public byte[] Compress(byte[] data, CancellationToken token, ManualResetEventSlim pauseEvent)
         {
             // 1. Build the frequency table.
             Dictionary<byte, int> frequencies = BuildFrequencyTable(data);
@@ -31,8 +31,16 @@ namespace FCP.Controllers
 
             // 4. Encode the data into a string of bits.
             var encodedBitString = new StringBuilder();
+            int bytesProcessed = 0;
+            const int checkInterval = 4096;
             foreach (byte b in data)
             {
+                if (++bytesProcessed % checkInterval == 0)
+                {
+                    pauseEvent.Wait(token);
+                    token.ThrowIfCancellationRequested();
+                }
+
                 encodedBitString.Append(encodingMap[b]);
             }
 
@@ -66,7 +74,7 @@ namespace FCP.Controllers
         /// <summary>
         /// Decompresses a byte array that was compressed with this Huffman implementation.
         /// </summary>
-        public byte[] Decompress(byte[] compressedData)
+        public byte[] Decompress(byte[] compressedData, CancellationToken token, ManualResetEventSlim pauseEvent)
         {
             using (var memoryStream = new MemoryStream(compressedData))
             using (var reader = new BinaryReader(memoryStream, Encoding.UTF8, true))
@@ -98,9 +106,18 @@ namespace FCP.Controllers
                     fullBitString.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
                 }
 
+                const int checkInterval = 8192;
+
                 // 4. Decode the data by traversing the tree for each relevant bit.
                 for (int i = 0; i < originalBitCount; i++)
                 {
+
+                    if (i % checkInterval == 0)
+                    {
+                        pauseEvent.Wait(token);
+                        token.ThrowIfCancellationRequested();
+                    }
+
                     // Traverse left for 0, right for 1.
                     currentNode = fullBitString[i] == '1' ? currentNode.Right : currentNode.Left;
 
