@@ -22,13 +22,14 @@ namespace FCP
     {
         // Flag to track the paused state of an operation
         private CancellationTokenSource _cancellationTokenSource;
-        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true); // يسمح بالمتابعة افتراضياً
+        private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true);
         private bool isPaused = false;
         public MainForm()
         {
             InitializeComponent();
             // Initially hide the password text box
             txtPassword.Visible = false;
+            btnPauseResume.Text = "pause";
 
         }
 
@@ -179,6 +180,10 @@ namespace FCP
                 SetUIState(true);
                 lblCurrentActionValue.Text = "Compressing...";
 
+                _pauseEvent.Set();
+                isPaused = false;
+                btnPauseResume.Text = "Pause";
+
                 try
                 {
                     await Task.Run(
@@ -191,7 +196,7 @@ namespace FCP
                         _cancellationTokenSource.Token
                     );
 
-                    // تحقق من الإلغاء قبل متابعة المعالجة
+                    
                     if (_cancellationTokenSource.IsCancellationRequested)
                     {
                         lblCurrentActionValue.Text = "Operation was canceled.";
@@ -204,39 +209,20 @@ namespace FCP
                             MessageBoxIcon.Information
                         );
 
-                        return; // خروج دون عرض رسالة نجاح
+                        return;
                     }
 
+                   
                     byte[] archiveBytes = File.ReadAllBytes(outputArchivePath);
 
-                    if (chkPassword.Checked && !string.IsNullOrWhiteSpace(txtPassword.Text))
-                    {
-                        // مشفّر
-                        byte[] encryptedBytes = EncryptionHelper.EncryptWithPassword(archiveBytes, txtPassword.Text);
+                    EncryptionHelper.HandleEncryptionAndWriteFile(
+                        archiveBytes,
+                        txtPassword.Text,
+                        chkPassword.Checked,
+                        outputArchivePath
+                    );
 
-                        // إضافة علم يدل على التشفير
-                        byte[] withFlag = new byte[1 + encryptedBytes.Length];
-                        withFlag[0] = (byte)'E';
-                        Buffer.BlockCopy(encryptedBytes, 0, withFlag, 1, encryptedBytes.Length);
-                        File.WriteAllBytes(outputArchivePath, withFlag);
-
-                        MessageBox.Show(
-                            "The archive was successfully encrypted with your password.",
-                            "Encryption Complete",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information
-                        );
-                    }
-                    else
-                    {
-                        // إضافة علم يدل على عدم التشفير
-                        byte[] withFlag = new byte[1 + archiveBytes.Length];
-                        withFlag[0] = (byte)'U';
-                        Buffer.BlockCopy(archiveBytes, 0, withFlag, 1, archiveBytes.Length);
-                        File.WriteAllBytes(outputArchivePath, withFlag);
-                    }
-
-                    // الحساب والعرض
+                   
                     long originalSize = filesToArchive.Keys.Sum(path => new FileInfo(path).Length);
                     long compressedSize = new FileInfo(outputArchivePath).Length;
                     double ratio = (double)compressedSize / originalSize;
@@ -252,7 +238,6 @@ namespace FCP
                         MessageBoxIcon.Information
                     );
 
-                    // إعادة ضبط القيم
                     lblCurrentFile.Text = "...";
                     lblCurrentActionValue.Text = "...";
                 }
@@ -284,11 +269,16 @@ namespace FCP
                 }
                 finally
                 {
+                    _pauseEvent.Set();
+                    isPaused = false;
+                    btnPauseResume.Text = "Pause";
+
                     SetUIState(false);
-                    _cancellationTokenSource.Dispose();
+                    _cancellationTokenSource?.Dispose();
                 }
             }
         }
+
 
 
 
@@ -327,33 +317,8 @@ namespace FCP
 
             try
             {
-                byte[] archiveBytes = File.ReadAllBytes(sourceArchivePath);
-
-                // قراءة العلم
-                char encryptionFlag = (char)archiveBytes[0];
-                byte[] actualData = archiveBytes.Skip(1).ToArray();
-
-                if (encryptionFlag == 'E')
-                {
-                    var passwordDialog = new PasswordPromptForm();
-                    var result = passwordDialog.ShowDialog();
-
-                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(passwordDialog.Password))
-                    {
-                        actualData = DecryptionHelper.DecryptWithPassword(actualData, passwordDialog.Password);
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Password is required to decrypt this archive.",
-                            "Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning
-                        );
-
-                        return;
-                    }
-                }
+                
+                byte[] actualData = DecryptionHelper.HandleDecryptionIfNeeded(sourceArchivePath);
 
                 string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".fcp");
                 File.WriteAllBytes(tempPath, actualData);
@@ -369,7 +334,7 @@ namespace FCP
                     _cancellationTokenSource.Token
                 );
 
-                File.Delete(tempPath); // تنظيف الملف المؤقت
+                File.Delete(tempPath);
 
                 if (_cancellationTokenSource.IsCancellationRequested)
                 {
@@ -380,7 +345,7 @@ namespace FCP
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
-                    return; // خروج بدون عرض رسالة نجاح
+                    return;
                 }
 
                 lblCurrentActionValue.Text = "Extraction Completed!";
@@ -426,7 +391,8 @@ namespace FCP
         }
 
 
-       
+
+
 
         // Event handler for the "Cancel" button in the status panel
         private void btnCancel_Click(object sender, EventArgs e)
@@ -439,13 +405,16 @@ namespace FCP
         {
             isPaused = !isPaused;
             btnPauseResume.Text = isPaused ? "Resume" : "Pause";
+
             if (isPaused)
             {
-                _pauseEvent.Reset();
+                _pauseEvent.Reset(); // إيقاف العملية
+                lblCurrentActionValue.Text = "Paused...";
             }
             else
             {
-                _pauseEvent.Set();
+                _pauseEvent.Set(); // متابعة العملية
+                lblCurrentActionValue.Text = "Resuming...";
             }
         }
 

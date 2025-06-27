@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,26 +18,17 @@ namespace FCP.Controllers
             _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
         }
 
-        /// <summary>
-        /// Creates an archive from a list of file paths.
-        /// </summary>
-        /// <param name="filesToArchive">A dictionary where Key is the full path to the source file
-        /// and Value is the relative path to store in the archive.</param>
-        /// <param name="outputArchivePath">The path where the final archive file will be saved.</param>
-        /// <param name="progress">An object to report progress back to the UI.</param>
         public void CreateArchive(
-    Dictionary<string, string> filesToArchive,
-    string outputArchivePath,
-    IProgress<ProgressInfo> progress,
-    CancellationToken token,
-    ManualResetEventSlim pauseEvent)
+            Dictionary<string, string> filesToArchive,
+            string outputArchivePath,
+            IProgress<ProgressInfo> progress,
+            CancellationToken token,
+            ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(outputArchivePath, FileMode.Create))
             using (BinaryWriter writer = new BinaryWriter(archiveStream))
             {
-                // كتابة الهيدر
                 writer.Write(Encoding.UTF8.GetBytes("FCP_ARCH"));
-
                 char algoIdentifier = (_algorithm is HuffmanAlgorithm) ? 'H' : 'S';
                 writer.Write(algoIdentifier);
                 writer.Write(filesToArchive.Count);
@@ -48,19 +38,27 @@ namespace FCP.Controllers
 
                 foreach (var fileEntry in filesToArchive)
                 {
-                    // تحقق من الإلغاء بدون رمي استثناء
-                    if (token.IsCancellationRequested)
+                    // 1. فحص الإلغاء أولاً
+                    token.ThrowIfCancellationRequested();
+
+                    // 2. حلقة الإيقاف المؤقت المحسنة
+                    while (!pauseEvent.IsSet)
                     {
                         progress?.Report(new ProgressInfo
                         {
                             Percentage = (filesProcessed * 100) / totalFiles,
-                            CurrentFile = "Operation canceled by user."
+                            CurrentFile = "Paused..."
                         });
-                        return; // خروج هادئ من الدالة
+
+                        // انتظار قصير مع فحص الإلغاء
+                        if (token.WaitHandle.WaitOne(200)) // زمن انتظار محسن (200ms)
+                        {
+                            token.ThrowIfCancellationRequested();
+                        }
                     }
 
-                    // تحقق من الإيقاف المؤقت
-                    pauseEvent.Wait();
+                    // 3. فحص الإلغاء مرة أخرى بعد الخروج من حلقة الإيقاف
+                    token.ThrowIfCancellationRequested();
 
                     string sourcePath = fileEntry.Key;
                     string relativePath = fileEntry.Value;
@@ -86,8 +84,6 @@ namespace FCP.Controllers
                 }
             }
         }
-
-
 
         private void WriteEntry(BinaryWriter writer, ArchiveEntry entry, byte[] data)
         {
