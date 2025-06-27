@@ -60,13 +60,17 @@ namespace FCP.Controllers
         /// <summary>
         /// Extracts all files from an archive to a specified destination directory.
         /// </summary>
-        public void ExtractArchive(string sourceArchivePath, string destinationDirectory,
-                                   IProgress<ProgressInfo> progress)
+        public void ExtractArchive(
+     string sourceArchivePath,
+     string destinationDirectory,
+     IProgress<ProgressInfo> progress,
+     CancellationToken token,
+     ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(sourceArchivePath, FileMode.Open))
             using (BinaryReader reader = new BinaryReader(archiveStream))
             {
-                // --- Read Main Archive Header ---
+                // قراءة الهيدر
                 string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
                 if (magic != "FCP_ARCH")
                 {
@@ -78,56 +82,54 @@ namespace FCP.Controllers
 
                 if (algoIdentifier == 'H')
                 {
-                    selectedAlgorithm = _huffman;
-                }
-                else if (algoIdentifier == 'S')
-                {
-                    selectedAlgorithm = _shannonFano;
+                    selectedAlgorithm = new HuffmanAlgorithm();
                 }
                 else
                 {
-                    throw new InvalidDataException("Archive contains an unknown compression algorithm identifier.");
+                    selectedAlgorithm = new ShannonFanoAlgorithm();
                 }
 
                 int totalFiles = reader.ReadInt32();
                 int filesProcessed = 0;
 
-                // --- Read File Entries ---
                 for (int i = 0; i < totalFiles; i++)
                 {
+                    // تحقق من الإلغاء بدون رمي استثناء
+                    if (token.IsCancellationRequested)
+                    {
+                        progress?.Report(new ProgressInfo
+                        {
+                            Percentage = (filesProcessed * 100) / totalFiles,
+                            CurrentFile = "Operation canceled by user."
+                        });
+                        return; // خروج هادئ من الدالة
+                    }
+
+                    // تحقق من الإيقاف المؤقت
+                    pauseEvent.Wait();
 
                     string relativePath = reader.ReadString();
                     long originalSize = reader.ReadInt64();
                     long compressedSize = reader.ReadInt64();
 
-                    filesProcessed++;
-                    var report = new ProgressInfo
-                    {
-                        Percentage = (filesProcessed * 100) / totalFiles,
-                        CurrentFile = $"Extracting: {Path.GetFileName(relativePath)}"
-                    };
-                    progress.Report(report);
-
                     byte[] compressedData = reader.ReadBytes((int)compressedSize);
                     byte[] decompressedData = selectedAlgorithm.Decompress(compressedData);
 
-                    // **THE FIX IS HERE: Defensively handle improperly stored absolute paths.**
-                    // If the path stored in the archive is absolute, this prevents writing files
-                    // outside of the intended destination directory.
-                    if (Path.IsPathRooted(relativePath))
-                    {
-                        // This makes the extraction work even with archives created by a buggy writer.
-                        // In a production app, you might log this as a warning.
-                        relativePath = Path.GetFileName(relativePath);
-                    }
-
                     string destinationFilePath = Path.Combine(destinationDirectory, relativePath);
-
                     Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
-
                     File.WriteAllBytes(destinationFilePath, decompressedData);
+
+                    filesProcessed++;
+                    progress?.Report(new ProgressInfo
+                    {
+                        Percentage = (filesProcessed * 100) / totalFiles,
+                        CurrentFile = $"{Path.GetFileName(relativePath)} ...Done!"
+                    });
                 }
             }
         }
+
     }
-}
+
+
+  }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,52 +18,53 @@ namespace FCP.Controllers
             _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
         }
 
-        /// <summary>
-        /// Creates an archive from a list of file paths.
-        /// </summary>
-        /// <param name="filesToArchive">A dictionary where Key is the full path to the source file
-        /// and Value is the relative path to store in the archive.</param>
-        /// <param name="outputArchivePath">The path where the final archive file will be saved.</param>
-        /// <param name="progress">An object to report progress back to the UI.</param>
-        public void CreateArchive(Dictionary<string, string> filesToArchive, string outputArchivePath,
-                                  IProgress<ProgressInfo> progress)
+        public void CreateArchive(
+            Dictionary<string, string> filesToArchive,
+            string outputArchivePath,
+            IProgress<ProgressInfo> progress,
+            CancellationToken token,
+            ManualResetEventSlim pauseEvent)
         {
             using (FileStream archiveStream = new FileStream(outputArchivePath, FileMode.Create))
             using (BinaryWriter writer = new BinaryWriter(archiveStream))
             {
-                // --- Main Archive Header ---
-                // 1. Magic Number
                 writer.Write(Encoding.UTF8.GetBytes("FCP_ARCH"));
-
-                // 2. Algorithm Identifier (THE FIX IS HERE)
                 char algoIdentifier = (_algorithm is HuffmanAlgorithm) ? 'H' : 'S';
                 writer.Write(algoIdentifier);
-
-                // 3. File Count
                 writer.Write(filesToArchive.Count);
 
                 int filesProcessed = 0;
                 int totalFiles = filesToArchive.Count;
 
-                // --- File Entries ---
                 foreach (var fileEntry in filesToArchive)
                 {
+                    // 1. فحص الإلغاء أولاً
+                    token.ThrowIfCancellationRequested();
+
+                    // 2. حلقة الإيقاف المؤقت المحسنة
+                    while (!pauseEvent.IsSet)
+                    {
+                        progress?.Report(new ProgressInfo
+                        {
+                            Percentage = (filesProcessed * 100) / totalFiles,
+                            CurrentFile = "Paused..."
+                        });
+
+                        // انتظار قصير مع فحص الإلغاء
+                        if (token.WaitHandle.WaitOne(200)) // زمن انتظار محسن (200ms)
+                        {
+                            token.ThrowIfCancellationRequested();
+                        }
+                    }
+
+                    // 3. فحص الإلغاء مرة أخرى بعد الخروج من حلقة الإيقاف
+                    token.ThrowIfCancellationRequested();
 
                     string sourcePath = fileEntry.Key;
                     string relativePath = fileEntry.Value;
 
-                    filesProcessed++;
-                    var report = new ProgressInfo
-                    {
-                        Percentage = (filesProcessed * 100) / totalFiles,
-                        CurrentFile = $"{Path.GetFileName(sourcePath)} ...Done!"
-                    };
-                    progress.Report(report);
-
                     byte[] originalData = File.ReadAllBytes(sourcePath);
                     byte[] compressedData = _algorithm.Compress(originalData);
-
-                    if (compressedData == null) continue;
 
                     var entry = new ArchiveEntry
                     {
@@ -72,8 +72,15 @@ namespace FCP.Controllers
                         OriginalSize = originalData.Length,
                         CompressedSize = compressedData.Length
                     };
-                   
+
                     WriteEntry(writer, entry, compressedData);
+
+                    filesProcessed++;
+                    progress?.Report(new ProgressInfo
+                    {
+                        Percentage = (filesProcessed * 100) / totalFiles,
+                        CurrentFile = $"{Path.GetFileName(sourcePath)} ...Done!"
+                    });
                 }
             }
         }
