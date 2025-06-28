@@ -31,6 +31,8 @@ namespace FCP
         /// </summary>
         private void InitializeComponent()
         {
+            this.btnRegisterShell = new System.Windows.Forms.ToolStripButton();
+            this.btnUnregisterShell = new System.Windows.Forms.ToolStripButton();
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.btnAddFiles = new System.Windows.Forms.ToolStripButton();
             this.btnAddFolder = new System.Windows.Forms.ToolStripButton();
@@ -94,7 +96,10 @@ namespace FCP
             this.toolStripSeparator2,
             this.btnCompress,
             this.btnDecompress,
-            this.btnDecompressSelected});
+            this.btnDecompressSelected,
+            this.btnRegisterShell,
+            this.btnUnregisterShell
+            });
             this.mainToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
             this.mainToolStrip.Name = "mainToolStrip";
@@ -137,6 +142,21 @@ namespace FCP
             // 
             // btnOpenArchive
             // 
+            this.btnRegisterShell.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRegisterShell.Name = "btnRegisterShell";
+            this.btnRegisterShell.Size = new System.Drawing.Size(103, 56);
+            this.btnRegisterShell.Text = "Register Shell";
+            this.btnRegisterShell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnRegisterShell.Click += new System.EventHandler(this.btnRegisterShell_Click);
+            // 
+            // btnUnregisterShell
+            // 
+            this.btnUnregisterShell.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUnregisterShell.Name = "btnUnregisterShell";
+            this.btnUnregisterShell.Size = new System.Drawing.Size(117, 56);
+            this.btnUnregisterShell.Text = "Unregister Shell";
+            this.btnUnregisterShell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnUnregisterShell.Click += new System.EventHandler(this.btnUnregisterShell_Click);
             this.btnOpenArchive.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenArchive.Image = global::FCP.Properties.Resources.extract;
             this.btnOpenArchive.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -625,6 +645,8 @@ namespace FCP
         private System.Windows.Forms.RadioButton radioHuffman;
         private System.Windows.Forms.Label lblCurrentFile;
         private System.Windows.Forms.ToolStripButton btnOpenArchive;
+        private System.Windows.Forms.ToolStripButton btnRegisterShell;
+        private System.Windows.Forms.ToolStripButton btnUnregisterShell;
 
     }
 }
