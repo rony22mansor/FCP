@@ -1,4 +1,5 @@
 ﻿using FCP.Controllers;
+using FCP.Core;
 using FCP.Helpers;
 using FCP.Models;
 using System;
@@ -24,11 +25,39 @@ namespace FCP
         private System.Threading.ManualResetEventSlim _pauseEvent;
         private string _currentOpenArchivePath;
         private string _currentOperation;
-        public MainForm()
+        public MainForm(string[] args = null)
         {
             InitializeComponent();
             // Initially hide the password text box
             txtPassword.Visible = false;
+            if (args != null && args.Length > 0)
+            {
+                string inputPath = args[0];
+
+                if (File.Exists(inputPath))
+                {
+                    var info = new FileInfo(inputPath);
+                    var item = new ListViewItem(info.Name);
+                    item.SubItems.Add(FilesFoldersHelper.FormatBytes(info.Length));
+                    item.SubItems.Add(info.FullName);
+                    item.Tag = info.FullName;
+                    fileListView.Items.Add(item);
+                }
+                else if (Directory.Exists(inputPath))
+                {
+                    FilesFoldersHelper.AddAllFilesFromFolder(inputPath, inputPath, fileListView);
+                }
+            }
+        }
+
+        private void btnRegisterShell_Click(object sender, EventArgs e)
+        {
+            ShellIntegration.Register();
+        }
+
+        private void btnUnregisterShell_Click(object sender, EventArgs e)
+        {
+            ShellIntegration.Unregister();
         }
 
         private void SetUIState(bool isProcessing, bool isArchiveOpen = false)
