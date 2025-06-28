@@ -50,6 +50,7 @@
     <Compile Include="Controllers\ArchiveWriter.cs" />
     <Compile Include="Controllers\HuffmanAlgorithm.cs" />
     <Compile Include="Controllers\ShannonFanoAlgorithm.cs" />
+    <Compile Include="Core\ShellIntegration.cs" />
     <Compile Include="Helpers\DecryptionHelper.cs" />
     <Compile Include="Helpers\EncryptionHelper.cs" />
     <Compile Include="Helpers\FilesFoldersHelper.cs" />

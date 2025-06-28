@@ -1,6 +1,7 @@
 ﻿using FCP.Controllers;
 using FCP.Helpers;
 using FCP.Models;
+using FCP.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,14 +25,43 @@ namespace FCP
         private CancellationTokenSource _cancellationTokenSource;
         private ManualResetEventSlim _pauseEvent = new ManualResetEventSlim(true);
         private bool isPaused = false;
-        public MainForm()
+        public MainForm(string[] args = null)
         {
             InitializeComponent();
-            // Initially hide the password text box
             txtPassword.Visible = false;
             btnPauseResume.Text = "pause";
 
+            if (args != null && args.Length > 0)
+            {
+                string inputPath = args[0];
+
+                if (File.Exists(inputPath))
+                {
+                    var info = new FileInfo(inputPath);
+                    var item = new ListViewItem(info.Name);
+                    item.SubItems.Add(FilesFoldersHelper.FormatBytes(info.Length));
+                    item.SubItems.Add(info.FullName);
+                    item.Tag = info.FullName;
+                    fileListView.Items.Add(item);
+                }
+                else if (Directory.Exists(inputPath))
+                {
+                    FilesFoldersHelper.AddAllFilesFromFolder(inputPath, inputPath, fileListView);
+                }
+            }
         }
+
+        private void btnRegisterShell_Click(object sender, EventArgs e)
+        {
+            ShellIntegration.Register();
+        }
+
+        private void btnUnregisterShell_Click(object sender, EventArgs e)
+        {
+            ShellIntegration.Unregister();
+        }
+
+
 
         // Event handler for the "Add Files" button
         private void btnAddFiles_Click(object sender, EventArgs e)

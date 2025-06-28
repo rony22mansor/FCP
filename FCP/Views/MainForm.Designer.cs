@@ -31,6 +31,7 @@ namespace FCP
         /// </summary>
         private void InitializeComponent()
         {
+          
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.btnAddFiles = new System.Windows.Forms.ToolStripButton();
             this.btnAddFolder = new System.Windows.Forms.ToolStripButton();
@@ -76,6 +77,27 @@ namespace FCP
             this.tableLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
+            // btnRegisterShell
+            // 
+            this.btnRegisterShell = new System.Windows.Forms.ToolStripButton();
+            //this.btnRegisterShell.Image = global::FCP.Properties.Resources.register; // أو null لو ما في صورة
+            this.btnRegisterShell.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRegisterShell.Text = "Register Shell";
+            this.btnRegisterShell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnRegisterShell.Click += new System.EventHandler(this.btnRegisterShell_Click);
+            // 
+            // btnUnregisterShell
+            // 
+            // 
+            // btnUnregisterShell
+            // 
+            this.btnUnregisterShell = new System.Windows.Forms.ToolStripButton();
+            //this.btnUnregisterShell.Image = global::FCP.Properties.Resources.unregister; // أو null لو ما في صورة
+            this.btnUnregisterShell.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUnregisterShell.Text = "Unregister Shell";
+            this.btnUnregisterShell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnUnregisterShell.Click += new System.EventHandler(this.btnUnregisterShell_Click);
+            // 
             // mainToolStrip
             // 
             this.mainToolStrip.AllowMerge = false;
@@ -90,7 +112,11 @@ namespace FCP
             this.btnRemoveAll,
             this.toolStripSeparator2,
             this.btnCompress,
-            this.btnExtract});
+            this.btnExtract,
+            this.btnRegisterShell,     
+            this.btnUnregisterShell    
+            
+            });
             this.mainToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
             this.mainToolStrip.Name = "mainToolStrip";
@@ -358,6 +384,8 @@ namespace FCP
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 2F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49F));
+            //this.tableLayoutPanel2.Controls.Add(this.btnRegisterShell);
+            //this.tableLayoutPanel2.Controls.Add(this.btnUnregisterShell);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.splitter1, 1, 0);
@@ -382,8 +410,8 @@ namespace FCP
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 36);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 1);
             this.tableLayoutPanel4.TabIndex = 2;
             // 
             // txtPassword
@@ -402,7 +430,7 @@ namespace FCP
             this.chkPassword.Location = new System.Drawing.Point(4, 4);
             this.chkPassword.Margin = new System.Windows.Forms.Padding(4);
             this.chkPassword.Name = "chkPassword";
-            this.chkPassword.Size = new System.Drawing.Size(162, 20);
+            this.chkPassword.Size = new System.Drawing.Size(162, 1);
             this.chkPassword.TabIndex = 3;
             this.chkPassword.Text = "Encrypt with Password";
             this.chkPassword.UseVisualStyleBackColor = true;
@@ -420,8 +448,8 @@ namespace FCP
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 36);
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 1);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // radioShannonFano
@@ -430,7 +458,7 @@ namespace FCP
             this.radioShannonFano.Location = new System.Drawing.Point(176, 4);
             this.radioShannonFano.Margin = new System.Windows.Forms.Padding(4);
             this.radioShannonFano.Name = "radioShannonFano";
-            this.radioShannonFano.Size = new System.Drawing.Size(116, 20);
+            this.radioShannonFano.Size = new System.Drawing.Size(116, 1);
             this.radioShannonFano.TabIndex = 2;
             this.radioShannonFano.Text = "Shannon-Fano";
             this.radioShannonFano.UseVisualStyleBackColor = true;
@@ -442,7 +470,7 @@ namespace FCP
             this.radioHuffman.Location = new System.Drawing.Point(4, 4);
             this.radioHuffman.Margin = new System.Windows.Forms.Padding(4);
             this.radioHuffman.Name = "radioHuffman";
-            this.radioHuffman.Size = new System.Drawing.Size(136, 20);
+            this.radioHuffman.Size = new System.Drawing.Size(136, 1);
             this.radioHuffman.TabIndex = 1;
             this.radioHuffman.TabStop = true;
             this.radioHuffman.Text = "Huffman Algorithm";
@@ -453,7 +481,7 @@ namespace FCP
             this.splitter1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.splitter1.Location = new System.Drawing.Point(500, 3);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 36);
+            this.splitter1.Size = new System.Drawing.Size(3, 1);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
@@ -514,6 +542,7 @@ namespace FCP
             this.groupProcessStatus.PerformLayout();
             this.groupBoxOptions.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
@@ -559,5 +588,8 @@ namespace FCP
         private System.Windows.Forms.RadioButton radioShannonFano;
         private System.Windows.Forms.RadioButton radioHuffman;
         private System.Windows.Forms.Label lblCurrentFile;
+        private System.Windows.Forms.ToolStripButton btnRegisterShell;
+        private System.Windows.Forms.ToolStripButton btnUnregisterShell;
+
     }
 }
