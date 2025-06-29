@@ -31,8 +31,6 @@ namespace FCP
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnRegisterShell = new System.Windows.Forms.ToolStripButton();
-            this.btnUnregisterShell = new System.Windows.Forms.ToolStripButton();
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.btnAddFiles = new System.Windows.Forms.ToolStripButton();
             this.btnAddFolder = new System.Windows.Forms.ToolStripButton();
@@ -43,7 +41,8 @@ namespace FCP
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnCompress = new System.Windows.Forms.ToolStripButton();
             this.btnDecompress = new System.Windows.Forms.ToolStripButton();
-            this.btnDecompressSelected = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.btnDecompressFCP = new System.Windows.Forms.ToolStripButton();
             this.mainPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupProcessStatus = new System.Windows.Forms.GroupBox();
@@ -70,6 +69,10 @@ namespace FCP
             this.colFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.contextMenuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.registerShellToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unregisterShelllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainToolStrip.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -78,6 +81,7 @@ namespace FCP
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainToolStrip
@@ -96,12 +100,10 @@ namespace FCP
             this.toolStripSeparator2,
             this.btnCompress,
             this.btnDecompress,
-            this.btnDecompressSelected,
-            this.btnRegisterShell,
-            this.btnUnregisterShell
-            });
+            this.toolStripButton1,
+            this.btnDecompressFCP});
             this.mainToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.mainToolStrip.Location = new System.Drawing.Point(0, 28);
             this.mainToolStrip.Name = "mainToolStrip";
             this.mainToolStrip.Padding = new System.Windows.Forms.Padding(0, 5, 1, 5);
             this.mainToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -142,21 +144,6 @@ namespace FCP
             // 
             // btnOpenArchive
             // 
-            this.btnRegisterShell.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRegisterShell.Name = "btnRegisterShell";
-            this.btnRegisterShell.Size = new System.Drawing.Size(103, 56);
-            this.btnRegisterShell.Text = "Register Shell";
-            this.btnRegisterShell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnRegisterShell.Click += new System.EventHandler(this.btnRegisterShell_Click);
-            // 
-            // btnUnregisterShell
-            // 
-            this.btnUnregisterShell.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnUnregisterShell.Name = "btnUnregisterShell";
-            this.btnUnregisterShell.Size = new System.Drawing.Size(117, 56);
-            this.btnUnregisterShell.Text = "Unregister Shell";
-            this.btnUnregisterShell.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnUnregisterShell.Click += new System.EventHandler(this.btnUnregisterShell_Click);
             this.btnOpenArchive.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenArchive.Image = global::FCP.Properties.Resources.extract;
             this.btnOpenArchive.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -244,31 +231,46 @@ namespace FCP
             this.btnDecompress.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDecompress.Click += new System.EventHandler(this.btnDecompress_Click);
             // 
-            // btnExtractSelected
+            // toolStripButton1
             // 
-            this.btnDecompressSelected.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDecompressSelected.Image = global::FCP.Properties.Resources.extract;
-            this.btnDecompressSelected.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.btnDecompressSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDecompressSelected.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnDecompressSelected.Name = "btnDecompressSelected";
-            this.btnDecompressSelected.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.btnDecompressSelected.Size = new System.Drawing.Size(91, 70);
-            this.btnDecompressSelected.Text = "Decompress\nSelected";
-            this.btnDecompressSelected.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnDecompressSelected.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnDecompressSelected.ToolTipText = "Decompress\r\nSelected";
-            this.btnDecompressSelected.Click += new System.EventHandler(this.btnDecompressSelected_Click);
+            this.toolStripButton1.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripButton1.Image = global::FCP.Properties.Resources.extract;
+            this.toolStripButton1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.toolStripButton1.Size = new System.Drawing.Size(91, 70);
+            this.toolStripButton1.Text = "Decompress\nSelected";
+            this.toolStripButton1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.toolStripButton1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.toolStripButton1.ToolTipText = "Decompress\r\nSelected";
+            // 
+            // btnDecompressFCP
+            // 
+            this.btnDecompressFCP.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDecompressFCP.Image = global::FCP.Properties.Resources.extract;
+            this.btnDecompressFCP.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.btnDecompressFCP.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDecompressFCP.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnDecompressFCP.Name = "btnDecompressFCP";
+            this.btnDecompressFCP.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            this.btnDecompressFCP.Size = new System.Drawing.Size(91, 70);
+            this.btnDecompressFCP.Text = "Decompress\nFCP";
+            this.btnDecompressFCP.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnDecompressFCP.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnDecompressFCP.ToolTipText = "DecompressFCP";
+            this.btnDecompressFCP.Click += new System.EventHandler(this.btnDecompressFCP_Click);
             // 
             // mainPanel
             // 
             this.mainPanel.Controls.Add(this.tableLayoutPanel1);
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(0, 80);
+            this.mainPanel.Location = new System.Drawing.Point(0, 108);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(4);
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
-            this.mainPanel.Size = new System.Drawing.Size(1045, 638);
+            this.mainPanel.Size = new System.Drawing.Size(1045, 610);
             this.mainPanel.TabIndex = 3;
             // 
             // tableLayoutPanel1
@@ -285,7 +287,7 @@ namespace FCP
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 86.57487F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.42513F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 97F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1031, 647);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1031, 598);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // groupProcessStatus
@@ -303,7 +305,7 @@ namespace FCP
             this.groupProcessStatus.Controls.Add(this.progressBar);
             this.groupProcessStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupProcessStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupProcessStatus.Location = new System.Drawing.Point(4, 553);
+            this.groupProcessStatus.Location = new System.Drawing.Point(4, 504);
             this.groupProcessStatus.Margin = new System.Windows.Forms.Padding(4);
             this.groupProcessStatus.Name = "groupProcessStatus";
             this.groupProcessStatus.Padding = new System.Windows.Forms.Padding(4);
@@ -414,7 +416,7 @@ namespace FCP
             // 
             // progressBar
             // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.progressBar.Location = new System.Drawing.Point(8, 53);
             this.progressBar.Margin = new System.Windows.Forms.Padding(4);
@@ -427,11 +429,11 @@ namespace FCP
             this.groupBoxOptions.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.groupBoxOptions.Controls.Add(this.tableLayoutPanel2);
             this.groupBoxOptions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxOptions.Location = new System.Drawing.Point(4, 480);
+            this.groupBoxOptions.Location = new System.Drawing.Point(4, 437);
             this.groupBoxOptions.Margin = new System.Windows.Forms.Padding(4);
             this.groupBoxOptions.Name = "groupBoxOptions";
             this.groupBoxOptions.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBoxOptions.Size = new System.Drawing.Size(1023, 65);
+            this.groupBoxOptions.Size = new System.Drawing.Size(1023, 59);
             this.groupBoxOptions.TabIndex = 2;
             this.groupBoxOptions.TabStop = false;
             this.groupBoxOptions.Text = "Options";
@@ -450,8 +452,8 @@ namespace FCP
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1015, 42);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1015, 36);
             this.tableLayoutPanel2.TabIndex = 4;
             // 
             // tableLayoutPanel4
@@ -466,8 +468,8 @@ namespace FCP
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 36);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 30);
             this.tableLayoutPanel4.TabIndex = 2;
             // 
             // txtPassword
@@ -504,8 +506,8 @@ namespace FCP
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 36);
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(491, 30);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // radioShannonFano
@@ -537,7 +539,7 @@ namespace FCP
             this.splitter1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.splitter1.Location = new System.Drawing.Point(500, 3);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 36);
+            this.splitter1.Size = new System.Drawing.Size(3, 30);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
@@ -554,7 +556,7 @@ namespace FCP
             this.fileListView.Location = new System.Drawing.Point(4, 4);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(1023, 468);
+            this.fileListView.Size = new System.Drawing.Size(1023, 425);
             this.fileListView.TabIndex = 1;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
@@ -574,6 +576,40 @@ namespace FCP
             this.colPath.Text = "Path";
             this.colPath.Width = 635;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenuToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1045, 28);
+            this.menuStrip1.TabIndex = 4;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // contextMenuToolStripMenuItem
+            // 
+            this.contextMenuToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.registerShellToolStripMenuItem,
+            this.unregisterShelllToolStripMenuItem});
+            this.contextMenuToolStripMenuItem.Name = "contextMenuToolStripMenuItem";
+            this.contextMenuToolStripMenuItem.Size = new System.Drawing.Size(115, 24);
+            this.contextMenuToolStripMenuItem.Text = "Context menu";
+            // 
+            // registerShellToolStripMenuItem
+            // 
+            this.registerShellToolStripMenuItem.Name = "registerShellToolStripMenuItem";
+            this.registerShellToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
+            this.registerShellToolStripMenuItem.Text = "Register Shell";
+            this.registerShellToolStripMenuItem.Click += new System.EventHandler(this.btnRegisterShell_Click);
+            // 
+            // unregisterShelllToolStripMenuItem
+            // 
+            this.unregisterShelllToolStripMenuItem.Name = "unregisterShelllToolStripMenuItem";
+            this.unregisterShelllToolStripMenuItem.Size = new System.Drawing.Size(200, 26);
+            this.unregisterShelllToolStripMenuItem.Text = "Unregister Shelll";
+            this.unregisterShelllToolStripMenuItem.Click += new System.EventHandler(this.btnUnregisterShell_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -582,6 +618,8 @@ namespace FCP
             this.ClientSize = new System.Drawing.Size(1045, 718);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.mainToolStrip);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1063, 765);
@@ -602,6 +640,8 @@ namespace FCP
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -617,7 +657,7 @@ namespace FCP
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton btnCompress;
         private System.Windows.Forms.ToolStripButton btnDecompress;
-        private System.Windows.Forms.ToolStripButton btnDecompressSelected;
+        private System.Windows.Forms.ToolStripButton btnDecompressFCP;
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.GroupBox groupProcessStatus;
@@ -645,8 +685,10 @@ namespace FCP
         private System.Windows.Forms.RadioButton radioHuffman;
         private System.Windows.Forms.Label lblCurrentFile;
         private System.Windows.Forms.ToolStripButton btnOpenArchive;
-        private System.Windows.Forms.ToolStripButton btnRegisterShell;
-        private System.Windows.Forms.ToolStripButton btnUnregisterShell;
-
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem contextMenuToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem registerShellToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unregisterShelllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }

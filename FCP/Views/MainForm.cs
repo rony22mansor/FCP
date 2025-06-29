@@ -470,6 +470,84 @@ namespace FCP
             }
         }
 
+        private async void btnDecompressFCP_Click(object sender, EventArgs e)
+        {
+            string sourceArchivePath = null;
+
+            if (fileListView.SelectedItems.Count == 1)
+            {
+                var selectedItem = fileListView.SelectedItems[0];
+                if (selectedItem.Tag is string fullPath && fullPath.EndsWith(".fcp", StringComparison.OrdinalIgnoreCase))
+                {
+                    sourceArchivePath = fullPath;
+                }
+            }
+
+            if (sourceArchivePath == null)
+            {
+                MessageBox.Show("Please select a single .fcp archive from the list to decompress.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string destinationDirectory;
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Select destination folder for extraction";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                destinationDirectory = dialog.SelectedPath;
+            }
+
+            var reader = new ArchiveReader();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _pauseEvent = new ManualResetEventSlim(true);
+            var progress = new Progress<ProgressInfo>(report =>
+            {
+                progressBar.Value = report.Percentage;
+                lblCurrentFile.Text = report.CurrentFile;
+            });
+
+            SetUIState(true);
+            lblCurrentActionValue.Text = "Decompressing...";
+
+            try
+            {
+                _currentOperation = "Decompressing";
+                byte[] actualData = DecryptionHelper.HandleDecryptionIfNeeded(sourceArchivePath);
+
+                string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".fcp");
+                File.WriteAllBytes(tempPath, actualData);
+
+                await Task.Run(() => reader.ExtractArchive(tempPath, destinationDirectory,
+                                                          progress, _cancellationTokenSource.Token, _pauseEvent));
+
+
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                {
+                    lblCurrentActionValue.Text = "Decompressing was cancelled.";
+                }
+                else
+                {
+                    lblCurrentActionValue.Text = "Completed!";
+                    lblOutputPathValue.Text = destinationDirectory;
+                    MessageBox.Show("Decompressing completed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                File.Delete(tempPath);
+            }
+            catch (OperationCanceledException)
+            {
+                lblCurrentActionValue.Text = "Decompressing was cancelled.";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during Decompressing: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                SetUIState(false);
+            }
+        }
+
         private void btnCancel_Click(object sender, EventArgs e)
         {
             _cancellationTokenSource?.Cancel();

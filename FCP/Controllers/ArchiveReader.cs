@@ -25,7 +25,9 @@ namespace FCP.Controllers
             using (BinaryReader reader = new BinaryReader(archiveStream))
             {
                 // Read and validate magic number
+                reader.ReadBytes(1);
                 string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
+                Console.WriteLine("magic: " + (magic));
                 if (magic != "FCP_ARCH")
                 {
                     throw new InvalidDataException("The selected file is not a valid FCP archive.");
@@ -122,6 +124,7 @@ namespace FCP.Controllers
             using (FileStream archiveStream = new FileStream(sourceArchivePath, FileMode.Open))
             using (BinaryReader reader = new BinaryReader(archiveStream))
             {
+                reader.ReadBytes(1);
                 string magic = Encoding.UTF8.GetString(reader.ReadBytes(8));
                 if (magic != "FCP_ARCH") throw new InvalidDataException("Invalid archive file.");
 
